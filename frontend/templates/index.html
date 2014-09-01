@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Is your project up to date?</title>
+        <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css">
+        <link href='//fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <style>
+            body {
+                font-family: "Roboto", sans-serif;
+                font-weight: 300;
+                font-size: 13px;
+            }
+
+            h1, h2, h3, h4, h5 {
+                font-family: "Roboto", sans-serif;
+                font-weight: 300;
+                text-transform: uppercase;
+            }
+
+            h1 {
+                font-size: 3em;
+            }
+
+            h2 {
+                font-size: 2.8em;
+            }
+
+            h3 {
+                font-size: 2.6em;
+            }
+
+            h4 {
+                font-size: 2.4em;
+            }
+
+            h5 {
+                font-size: 2.2em;
+            }
+
+            #wrapper {
+                width: 960px;
+                margin: 0 auto;
+                margin-top: 100px;
+                text-align: center;
+            }
+
+            .clearfix {
+                clear: both;
+            }
+
+            #search-box {
+                width: auto;
+                height: 24px;
+
+                display: inline-block;
+                margin-top: 2.6em;
+            }
+
+            input {
+                width: 500px;
+                height: 24px;
+                padding: 8px;
+                font-size: 16px;
+                border-radius: 2px 0 0 2px;
+                border: 1px solid #CCC;
+                box-shadow: 0 0 0 #FF4444;
+            }
+
+            form:hover input, input:focus {
+                box-shadow: 0 0 4px #FF4444;
+                border: 1px solid #FF4444;
+                outline: none;
+            }
+
+            .attached-button-wrap {
+                width: 64px;
+                height: 42px;
+
+                display: inline-block;
+                line-height: 42px;
+                margin-left: -5px;
+
+                border-radius: 0 2px 2px 0;
+                box-sizing: border-box;
+                border: 1px solid #CCC;
+
+                background: #CCC;
+                background-image: url('http://labs.ninetwozero.com/wordpress/wp-content/themes/ninetwozero.com_201406/images/ic_action_github.png');
+                background-position: center;
+                background-repeat: no-repeat;
+                background-size: 36px;
+            }
+
+            .attached-button-wrap:hover {
+                cursor: pointer;
+
+            }
+
+            form:hover .attached-button-wrap, input:focus ~ .attached-button-wrap {
+                box-shadow: 1px 0 4px #FF4444;
+                background-color: #FF4444;
+                border: 1px solid #EE0000;
+            }
+
+            .attached-button {
+                border: 0;
+                background: none;
+
+            }
+        </style>
+        <script>
+            $(document).ready(
+                function() {
+                    $('.attached-button-wrap').click(
+                        function() {
+                            $(this).children('.attached-button')[0].click();
+                        }
+                    );
+
+                    $('#search-box').submit(
+                        function(event) {
+                            event.preventDefault();
+
+                            var form = $(this);
+                            var github_info = form.find("input[name='github-info']");
+                            var csrf_token = form.find("input[name='csrfmiddlewaretoken']");
+
+                            if (github_info.length == 0 || csrf_token.length == 0) {
+                                alert("Notify about empty value");
+                                return;
+                            }
+
+                            $.ajax(
+                                {
+                                    type: "POST",
+                                    dataType: 'json',
+                                    url:'/api/find-gradle-files/',
+                                    data: form.serialize(),
+                                    success: function (data) {
+                                        console.log(data);
+                                    },
+                                    error: function (data) {
+                                        console.log("[ERROR] data => " + data);
+                                    }
+                                }
+                            );
+                        }
+                    )
+                }
+            )
+        </script>
+    </head>
+    <body>
+        <div id="wrapper">
+            <h1>Is your project up to date?</h1>
+            <p>As time flies, the libraries we all love to use get updated. Use this service to see if there are newer any versions for you to use in your projects.</p>
+            <form method="post" id="search-box">
+                {% csrf_token %}
+                <input tabindex="0" name="github-info" placeholder="Ex: karllindmark/FizzBuzz" value="karllindmark/FizzBuzz">
+                <div class="attached-button-wrap">
+                    <button tabindex="-1" class="attached-button"></button>
+                </div>
+                <div class="clearfix"></div>
+            </form>
+        </div>
+    </body>
+</html>
