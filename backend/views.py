@@ -19,9 +19,12 @@ def find_gradle_files(request):
     gradle_files = [gradle_file for gradle_file in data if fnmatch.fnmatch(gradle_file['name'], "*.gradle")]
     return HttpResponse(json.dumps(gradle_files))
 
+# TODO: To the Github mobile!
 def find_dependencies(request):
-    print "YOLO";
-    return HttpResponse('{"json": "Finding dependencies for "}')
+    selected_files = request.POST.getlist('selected')
+
+    dependencies = {"DEBUG-selected-files": selected_files}
+    return HttpResponse(json.dumps(dependencies))
 
 
 def check_for_updates(request):

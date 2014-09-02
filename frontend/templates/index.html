@@ -57,7 +57,7 @@
                 margin-top: 2.6em;
             }
 
-            input {
+            input[type="text"] {
                 width: 500px;
                 height: 24px;
                 padding: 8px;
@@ -67,7 +67,7 @@
                 box-shadow: 0 0 0 #FF4444;
             }
 
-            form:hover input, input:focus {
+            form:hover input[type="text"], input[type="text"]:focus {
                 box-shadow: 0 0 4px #FF4444;
                 border: 1px solid #FF4444;
                 outline: none;
@@ -106,7 +106,63 @@
             .attached-button {
                 border: 0;
                 background: none;
+                z-index: -1;
+            }
 
+            /* Step #2 */
+            #step-2 {
+                display: none;
+            }
+
+            #project-files-table {
+                width: 600px;
+                margin-left: auto;
+                margin-right: auto;
+                margin-bottom: 2em;
+                border-spacing: 0;
+            }
+
+            #project-files-table tr:nth-child(2n+1) {
+                background: rgba(0, 0, 0, 0.05);
+
+            }
+
+            #project-files-table .left-col {
+                width: 500px;
+                text-align: left;
+            }
+
+            #project-files-table .right-col {
+                width: 100px;
+            }
+
+            #project-files-table td {
+                padding: 8px;
+            }
+
+            input[type="submit"] {
+                width: 64px;
+                height: 42px;
+
+                color: #FFF;
+                padding: 8px;
+
+                border-radius: 2px;
+                box-sizing: border-box;
+                border: 1px solid #CCC;
+            }
+
+            input[type="submit"]:hover {
+                box-shadow: 0 0 4px #FF4444;
+                background-color: #FF4444;
+                border: 1px solid #EE0000;
+                cursor: pointer;
+            }
+
+
+            /* Step 3 */
+            #step-3 {
+                display: none;
             }
         </style>
         <script>
@@ -138,7 +194,31 @@
                                     url:'/api/find-gradle-files/',
                                     data: form.serialize(),
                                     success: function (data) {
-                                        console.log(data);
+                                        var container = $('#project-files-table');
+
+                                        $(data).each(
+                                            function(index, item) {
+                                                var new_element = $(
+                                                    '<tr>' +
+                                                    '    <td class="left-col">' +
+                                                    '        <a href="' + item['html_url'] + '">' + item['path'] + '</a>' +
+                                                    '    </td>' +
+                                                    '    <td class="right-col">' +
+                                                    '        <input name="selected" type="checkbox" checked value="' + item['html_url'] + '">' +
+                                                    '    </td>' +
+                                                    '</tr>'
+                                                );
+
+                                                container.append(new_element)
+                                            }
+                                        );
+
+                                        // Last but not least
+                                        $('#step-1').fadeOut(
+                                            400, function() {
+                                                $("#step-2").fadeIn(400);
+                                            }
+                                        );
                                     },
                                     error: function (data) {
                                         console.log("[ERROR] data => " + data);
@@ -146,23 +226,96 @@
                                 }
                             );
                         }
-                    )
+                    );
+
+                    $('#project-files-box').submit(
+                        function() {
+                            event.preventDefault();
+
+                            var form = $(this);
+                            var file_paths = form.find("input[type='hidden']");
+                            var selected_files = form.find("input[type='checkbox']");
+                            var csrf_token = form.find("input[name='csrfmiddlewaretoken']");
+
+                            if (file_paths.length == 0 || selected_files.length == 0 || csrf_token.length == 0) {
+                                alert("Notify about empty value");
+                                return;
+                            }
+
+                            console.log(form.serializeArray())
+                            console.log(form.serialize());
+
+                            $.ajax(
+                                {
+                                    type: "POST",
+                                    dataType: 'json',
+                                    url:'/api/find-dependencies/',
+                                    data: form.serialize(),
+                                    success: function (data) {
+                                        console.log(data);
+
+                                        var container = $('#project-deps-table');
+
+                                        $(data).each(
+                                            function(index, item) {
+                                                var new_element = $(
+                                                    '<tr>' +
+                                                    '    <td class="left-col">' +
+                                                    '        <span>' + item['a'] + '</span>' +
+                                                    '    </td>' +
+                                                    '    <td class="right-col"></td>' +
+                                                    '</tr>'
+                                                );
+
+                                                container.append(new_element)
+                                            }
+                                        );
+                                        // Last but not least
+                                        $('#step-2').fadeOut(
+                                            400, function() {
+                                                $("#step-3").fadeIn(400);
+                                            }
+                                        );
+                                    },
+                                    error: function (data) {
+                                        console.log("[ERROR] data => " + data);
+                                    }
+                                }
+                            );
+                        }
+                    );
                 }
             )
         </script>
     </head>
     <body>
         <div id="wrapper">
-            <h1>Is your project up to date?</h1>
-            <p>As time flies, the libraries we all love to use get updated. Use this service to see if there are newer any versions for you to use in your projects.</p>
-            <form method="post" id="search-box">
-                {% csrf_token %}
-                <input tabindex="0" name="github-info" placeholder="Ex: karllindmark/FizzBuzz" value="karllindmark/FizzBuzz">
-                <div class="attached-button-wrap">
-                    <button tabindex="-1" class="attached-button"></button>
-                </div>
-                <div class="clearfix"></div>
-            </form>
+            <section id="step-1">
+                <h1>Is your project up to date?</h1>
+                <p>As time flies, the libraries we all love to use get updated. Use this service to see if there are newer any versions for you to use in your projects.</p>
+                <form method="post" id="search-box">
+                    {% csrf_token %}
+                    <input tabindex="0" name="github-info" placeholder="Ex: karllindmark/FizzBuzz" value="karllindmark/FizzBuzz" type="text">
+                    <div class="attached-button-wrap">
+                        <button tabindex="-1" class="attached-button"></button>
+                    </div>
+                    <div class="clearfix"></div>
+                </form>
+            </section>
+            <section id="step-2">
+                <h1>Project found!</h1>
+                <p>Not only did we find your project, but we've also managed to find the following files in it. You may select/deselect any files below.</p>
+                <form method="post" id="project-files-box">
+                    {% csrf_token %}
+                    <table id="project-files-table"></table>
+                    <input type="submit" value="Next">
+                </form>
+            </section>
+            <section id="step-3">
+                <h1>Dependencies gathered!</h1>
+                <p>Hooray! We've managed to gather the dependencies for your project. Please report any bugs you may encounter (for example, missing items)!</p>
+                <table id="project-deps-table"></table>
+            </section>
         </div>
     </body>
 </html>
