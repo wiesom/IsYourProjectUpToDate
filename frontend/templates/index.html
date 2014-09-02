@@ -5,6 +5,7 @@
         <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css">
         <link href='//fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <script src="http://fgnass.github.io/spin.js/spin.min.js"></script>
         <style>
             body {
                 font-family: "Roboto", sans-serif;
@@ -114,7 +115,7 @@
                 display: none;
             }
 
-            #project-files-table {
+            .subtle-table {
                 width: 600px;
                 margin-left: auto;
                 margin-right: auto;
@@ -122,26 +123,30 @@
                 border-spacing: 0;
             }
 
-            #project-files-table tr:nth-child(2n+1) {
-                background: rgba(0, 0, 0, 0.05);
-
+            .subtle-table tr {
+                border-bottom: 1px solid #EEE;
             }
 
-            #project-files-table .left-col {
+            .left-col {
                 width: 500px;
                 text-align: left;
             }
 
-            #project-files-table .right-col {
+            .right-col {
                 width: 100px;
             }
 
-            #project-files-table td {
+            .subtle-table td {
                 padding: 8px;
+                border-bottom: 1px solid #EEE;
             }
 
-            input[type="submit"] {
-                width: 64px;
+            .subtle-table tr:hover td {
+                background: rgba(0, 0, 0, 0.05);
+            }
+
+            .red-button {
+                min-width: 96px;
                 height: 42px;
 
                 color: #FFF;
@@ -150,19 +155,31 @@
                 border-radius: 2px;
                 box-sizing: border-box;
                 border: 1px solid #CCC;
+                background: #BBB;
+                text-decoration: none;
             }
 
-            input[type="submit"]:hover {
+            .red-button:hover {
                 box-shadow: 0 0 4px #FF4444;
                 background-color: #FF4444;
                 border: 1px solid #EE0000;
                 cursor: pointer;
             }
 
+            #project-deps-table .dependency-meta {
+                color: #CCC;
+                font-size: 0.9em;
+                display: block;
+            }
 
             /* Step 3 */
             #step-3 {
                 display: none;
+            }
+
+            #export-controllers a {
+                margin-left: 4px;
+                margin-right: 4px;
             }
         </style>
         <script>
@@ -201,14 +218,13 @@
                                                 var new_element = $(
                                                     '<tr>' +
                                                     '    <td class="left-col">' +
-                                                    '        <a href="' + item['html_url'] + '">' + item['path'] + '</a>' +
+                                                    '        <a href="' + item['html_url'] + '" target="_blank">' + item['path'] + '</a>' +
                                                     '    </td>' +
                                                     '    <td class="right-col">' +
                                                     '        <input name="selected" type="checkbox" checked value="' + item['html_url'] + '">' +
                                                     '    </td>' +
                                                     '</tr>'
                                                 );
-
                                                 container.append(new_element)
                                             }
                                         );
@@ -242,9 +258,6 @@
                                 return;
                             }
 
-                            console.log(form.serializeArray())
-                            console.log(form.serialize());
-
                             $.ajax(
                                 {
                                     type: "POST",
@@ -255,25 +268,67 @@
                                         console.log(data);
 
                                         var container = $('#project-deps-table');
+                                        container.children().remove();
 
                                         $(data).each(
                                             function(index, item) {
                                                 var new_element = $(
-                                                    '<tr>' +
+                                                    '<tr -data-group="' + item['g']+ '" -data-artifact="' + item['a'] + '" -data-version="' + item['v'] + '">' +
+                                                    "    {% csrf_token %}" +
                                                     '    <td class="left-col">' +
                                                     '        <span>' + item['a'] + '</span>' +
+                                                    '        <span class="dependency-meta">' + item['g'] +'</span>' +
+                                                    '        <span class="dependency-meta">' + item['v'] + '</span>' +
                                                     '    </td>' +
-                                                    '    <td class="right-col"></td>' +
+                                                    '    <td class="right-col" id="progress-' + item['a'] + '">Checking...</td>' +
                                                     '</tr>'
                                                 );
-
                                                 container.append(new_element)
                                             }
                                         );
                                         // Last but not least
                                         $('#step-2').fadeOut(
                                             400, function() {
-                                                $("#step-3").fadeIn(400);
+                                                $("#step-3").fadeIn(400, function() {
+                                                    $('#project-deps-table').find('tr').each(
+                                                        function() {
+                                                            var this_elem = $(this);
+                                                            var group = this_elem.attr('-data-group');
+                                                            var artifact = this_elem.attr('-data-artifact');
+                                                            var version = this_elem.attr('-data-version');
+                                                            var csrf_token = this_elem.find("input[name='csrfmiddlewaretoken']");
+                                                            var status_elem = this_elem.find('#progress-' + artifact);
+
+                                                            var postdata = {
+                                                                'group': group,
+                                                                'artifact': artifact,
+                                                                'version' : version,
+                                                                'csrfmiddlewaretoken': csrf_token.val()
+                                                            };
+
+                                                            setTimeout(
+                                                                function() {
+                                                                    $.ajax(
+                                                                            {
+                                                                                type: "POST",
+                                                                                dataType: 'json',
+                                                                                url: '/api/check-for-updates/',
+                                                                                data: postdata,
+                                                                                success: function (data) {
+                                                                                    status_elem.text(data['message']);
+                                                                                },
+                                                                                error: function (data) {
+                                                                                    console.log("ERROR in check-for-updates call");
+                                                                                    console.log(data);
+                                                                                }
+                                                                            }
+                                                                    );
+                                                                }, 500
+                                                            );
+
+                                                        }
+                                                    );
+                                                });
                                             }
                                         );
                                     },
@@ -307,14 +362,19 @@
                 <p>Not only did we find your project, but we've also managed to find the following files in it. You may select/deselect any files below.</p>
                 <form method="post" id="project-files-box">
                     {% csrf_token %}
-                    <table id="project-files-table"></table>
-                    <input type="submit" value="Next">
+                    <table id="project-files-table" class="subtle-table"></table>
+                    <input class="red-button" type="submit" value="Next">
                 </form>
             </section>
             <section id="step-3">
                 <h1>Dependencies gathered!</h1>
                 <p>Hooray! We've managed to gather the dependencies for your project. Please report any bugs you may encounter (for example, missing items)!</p>
-                <table id="project-deps-table"></table>
+                <table id="project-deps-table" class="subtle-table"></table>
+                <div id="export-controllers">
+                    <a href="#export-to-github" class="red-button">Export to Github</a>
+                    <a href="#export-to-pivotal" class="red-button">Export to Pivotal Tracker</a>
+                    <a href="#export-to-email" class="red-button">Export to email</a>
+                </div>
             </section>
         </div>
     </body>
