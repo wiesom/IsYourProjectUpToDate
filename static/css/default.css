@@ -78,7 +78,7 @@ form:hover input[type="text"], input[type="text"]:focus {
     border: 1px solid #CCC;
 
     background: #CCC;
-    background-image: url('http://labs.ninetwozero.com/wordpress/wp-content/themes/ninetwozero.com_201406/images/ic_action_github.png');
+    background-image: url('../images/ic_action_github.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: 36px;
