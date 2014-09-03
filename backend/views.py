@@ -20,7 +20,7 @@ def find_gradle_files(request):
         return HttpResponseBadRequest("Invalid request.")
 
     data = requests.request('GET', GITHUB_LIST_URL.format(github_info=github_info)).json()['items']
-    gradle_files = [gradle_file for gradle_file in data if fnmatch.fnmatch(gradle_file['name'], "*.gradle")]
+    gradle_files = [gradle_file for gradle_file in data if fnmatch.fnmatch(gradle_file['name'], "build.gradle")]
 
     return HttpResponse(json.dumps(gradle_files))
 
@@ -50,4 +50,4 @@ def check_for_updates(request):
     if latest_version > version:
         return HttpResponse('{"status": "UPDATE_FOUND", "message": "' + latest_version + '"}')
     else:
-        return HttpResponse('{"status": "UP-TO-DATE", "message": "' + latest_version_date + '"')
+        return HttpResponse('{"status": "UP-TO-DATE", "message": "' + str(latest_version_date) + '"}')
