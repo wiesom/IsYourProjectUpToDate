@@ -1,4 +1,7 @@
+from datetime import date
 from django.http import HttpResponse, HttpResponseBadRequest
+from JsonHttpResponseBuilder import JsonHttpResponseBuilder
+
 import json
 import requests
 import fnmatch
@@ -38,16 +41,18 @@ def check_for_updates(request):
     group = request.POST.get("group")
     artifact = request.POST.get("artifact")
     version = request.POST.get("version")
+    gav_string = group + ':' + artifact + ':' + version
 
     url = MVN_URL.format(group=group, artifact=artifact)
     response = requests.get(url).json()['response']
     if response['numFound'] == 0:
-        return HttpResponse('{"status": "NOT_FOUND", "message": "Not available in Maven Central."}')
+        return JsonHttpResponseBuilder("NOT_FOUND", "Not available in Maven Central.", {"gav_string": gav_string}).build()
 
     latest_version = response['docs'][0]['latestVersion']
     latest_version_date = response['docs'][0]['timestamp']
 
     if latest_version > version:
-        return HttpResponse('{"status": "UPDATE_FOUND", "message": "' + latest_version + '"}')
+        gav_string = group + ':' + artifact + ':' + latest_version
+        return JsonHttpResponseBuilder("UPDATE_FOUND", "New version:" + latest_version, {"gav_string": gav_string}).build()
     else:
-        return HttpResponse('{"status": "UP-TO-DATE", "message": "' + str(latest_version_date) + '"}')
+        return JsonHttpResponseBuilder("UP-TO-DATE", "Up to date", {"gav_string": gav_string}).build()

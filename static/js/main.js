@@ -9,6 +9,14 @@ $(document).ready(
     }
 );
 
+function setupClipboard(element) {
+    var client = new ZeroClipboard(element);
+    client.on( "ready", function( readyEvent ) {
+        client.on( "aftercopy", function( event ) {
+        });
+    });
+}
+
 function setupStep1() {
     $('#search-box').submit(
         function(event) {
@@ -102,13 +110,14 @@ function setupStep2() {
                                     '    </td>' +
                                     '    <td class="col-20" id="progress-' + item['a'] + '">Checking...</td>' +
                                     '    <td class="col-20">' +
-                                    '        <a href="#" class="red-button">Copy to clipboard</a>' +
+                                    '       <a href="#" class="red-button clipboard-button"">Copy to clipboard</a>' +
                                     '    </td>' +
                                     '</tr>'
                                 );
                                 container.append(new_element)
                             }
                         );
+
                         // Last but not least
                         $('#step-2').fadeOut(
                             400, function() {
@@ -133,6 +142,7 @@ function setupStep3() {
             var artifact = this_elem.attr('-data-artifact');
             var version = this_elem.attr('-data-version');
             var status_elem = this_elem.find('#progress-' + artifact);
+            var button = this_elem.find("a.clipboard-button");
 
             var postdata = {
                 'group': group,
@@ -148,6 +158,8 @@ function setupStep3() {
                     data: postdata,
                     success: function (data) {
                         status_elem.text(data['message']);
+                        button.attr('data-clipboard-text', data['gav_string']);
+                        setupClipboard(button);
                     },
                     error: function (data) {
                         console.log("ERROR in check-for-updates call");
