@@ -16,6 +16,20 @@ function setupClipboard(element) {
     });
 }
 
+function setupButtonsForExporting() {
+    $('#email-export').click(function(event) {
+        event.preventDefault();
+
+        var message = buildMessageForExport();
+        window.open("mailto:?subject=Project%20Dependency%20Status&body=" + message, "_blank")
+    });
+
+
+    function buildMessageForExport() {
+        return "We've found updates to the following libraries in your project:";
+    }
+}
+
 function setupStep1() {
     $('#search-box').submit(
         function(event) {
@@ -38,8 +52,6 @@ function setupStep1() {
                     success: function (data) {
                         var container = $('#project-files-table');
                         container.children().remove();
-
-                        console.log(data);
 
                         $(data['files']).each(
                             function(index, item) {
@@ -137,6 +149,8 @@ function setupStep2() {
 }
 
 function setupStep3() {
+    setupButtonsForExporting();
+
     $('#project-deps-table').find('tr').each(
         function () {
             var this_elem = $(this);
@@ -169,7 +183,6 @@ function setupStep3() {
                     }
                 }
             );
-
         }
     );
 }
