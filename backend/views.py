@@ -2,7 +2,6 @@ from datetime import date
 from django.http import HttpResponse, HttpResponseBadRequest
 from JsonHttpResponseBuilder import JsonHttpResponseBuilder
 
-import json
 import requests
 import fnmatch
 from backend.GradleProjectFile import GradleProjectFile
@@ -14,7 +13,7 @@ MVN_CENTRAL_API = "http://search.maven.org/solrsearch"
 MVN_URL = MVN_CENTRAL_API + '/select?q=g:"{group}"+a:"{artifact}"'
 
 def main(request):
-    return HttpResponse(':-)')
+    return JsonHttpResponseBuilder("NOT_IMPLEMENTED", ":-)")
 
 
 def find_gradle_files(request):
@@ -25,7 +24,7 @@ def find_gradle_files(request):
     data = requests.request('GET', GITHUB_LIST_URL.format(github_info=github_info)).json()['items']
     gradle_files = [gradle_file for gradle_file in data if fnmatch.fnmatch(gradle_file['name'], "build.gradle")]
 
-    return HttpResponse(json.dumps(gradle_files))
+    return JsonHttpResponseBuilder("OK", "", {"files": gradle_files}).build()
 
 def find_dependencies(request):
     selected_files = request.POST.getlist('selected')
@@ -34,8 +33,7 @@ def find_dependencies(request):
     for selected_file in selected_files:
         response = requests.get(selected_file.replace("/blob/", "/raw/"))
         dependencies.extend(GradleProjectFile(selected_file, response).extract())
-    return HttpResponse(json.dumps(dependencies))
-
+    return JsonHttpResponseBuilder("OK", "", {"dependencies": dependencies}).build()
 
 def check_for_updates(request):
     group = request.POST.get("group")

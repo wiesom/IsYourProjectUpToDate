@@ -1,14 +1,11 @@
 import re
+from backend.GenericProjectFile import GenericProjectFile
 
 QUOTE = '(?:["|\'])'
 STRING = '([\w\.\-\+]+)'
 GAV_REGEXP = QUOTE + '(?:' + ":".join([STRING, STRING, STRING]) + ')' + QUOTE
 
-class GradleProjectFile:
-    def __init__(self, name, result):
-        self.name = name
-        self.result = result
-
+class GradleProjectFile (GenericProjectFile):
     def extract(self):
         dependencies = []
         for line in self.result.iter_lines():

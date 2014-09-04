@@ -10,10 +10,9 @@ $(document).ready(
 );
 
 function setupClipboard(element) {
-    var client = new ZeroClipboard(element);
-    client.on( "ready", function( readyEvent ) {
-        client.on( "aftercopy", function( event ) {
-        });
+    element.click(function() {
+        /* TODO: Add opening of modal with GAV to copy */
+        alert("TODO: Open modal with link in input box")
     });
 }
 
@@ -38,8 +37,11 @@ function setupStep1() {
                     data: form.serialize(),
                     success: function (data) {
                         var container = $('#project-files-table');
+                        container.children().remove();
 
-                        $(data).each(
+                        console.log(data);
+
+                        $(data['files']).each(
                             function(index, item) {
                                 var new_element = $(
                                     '<tr>' +
@@ -99,10 +101,10 @@ function setupStep2() {
                         var container = $('#project-deps-table');
                         container.children().remove();
 
-                        $(data).each(
+                        $(data['dependencies']).each(
                             function(index, item) {
                                 var new_element = $(
-                                    '<tr -data-group="' + item['g']+ '" -data-artifact="' + item['a'] + '" -data-version="' + item['v'] + '">' +
+                                    '<tr data-group="' + item['g']+ '" data-artifact="' + item['a'] + '" data-version="' + item['v'] + '">' +
                                     '    <td class="col-60">' +
                                     '        <span>' + item['a'] + '</span>' +
                                     '        <span class="dependency-meta">' + item['g'] +'</span>' +
@@ -138,9 +140,9 @@ function setupStep3() {
     $('#project-deps-table').find('tr').each(
         function () {
             var this_elem = $(this);
-            var group = this_elem.attr('-data-group');
-            var artifact = this_elem.attr('-data-artifact');
-            var version = this_elem.attr('-data-version');
+            var group = this_elem.attr('data-group');
+            var artifact = this_elem.attr('data-artifact');
+            var version = this_elem.attr('data-version');
             var status_elem = this_elem.find('#progress-' + artifact);
             var button = this_elem.find("a.clipboard-button");
 
