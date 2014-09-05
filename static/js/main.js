@@ -60,7 +60,7 @@ function setupStep1() {
                     data: form.serialize(),
                     success: function (data) {
                         var container = $('#project-files-table');
-                        container.children().remove();
+                        container.find("tbody").remove();
 
                         $(data['files']).each(
                             function(index, item) {
@@ -116,7 +116,7 @@ function setupStep2() {
                     data: form.serialize(),
                     success: function (data) {
                         var container = $('#project-deps-table');
-                        container.children().remove();
+                        container.find("tbody").remove();
 
                         $(data['dependencies']).each(
                             function(index, item) {
@@ -127,7 +127,9 @@ function setupStep2() {
                                     '        <span class="dependency-meta">' + item['g'] +'</span>' +
                                     '        <span class="dependency-meta">' + item['v'] + '</span>' +
                                     '    </td>' +
-                                    '    <td class="col-20" id="progress-' + item['a'] + '">Checking...</td>' +
+                                    '    <td class="col-20" style="white-space: pre" id="progress-' + item['a'] + '">' +
+                                    '        Checking...' +
+                                    '    </td>' +
                                     '    <td class="col-20">' +
                                     '       <a href="#" class="red-button clipboard-button"">Copy to clipboard</a>' +
                                     '    </td>' +

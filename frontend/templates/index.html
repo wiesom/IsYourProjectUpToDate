@@ -4,7 +4,7 @@
         {% load staticfiles %}
         <title>Is your project up to date?</title>
         <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css">
-        <link href='//fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
+        <link href='//fonts.googleapis.com/css?family=Roboto:300,700' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" href="{% static "css/default.css" %}">
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
@@ -36,14 +36,30 @@
                 <h1>Project found!</h1>
                 <p>Not only did we find your project, but we've also managed to find the following files in it. You may select/deselect any files below.</p>
                 <form method="post" id="project-files-box">
-                    <table id="project-files-table" class="subtle-table"></table>
+                    <table id="project-files-table" class="subtle-table">
+                        <thead>
+                            <tr>
+                                <th class="col-80">Project file</th>
+                                <th class="col-20">Include?</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
                     <input class="red-button" type="submit" value="Next">
                 </form>
             </section>
             <section id="step-3">
                 <h1>Dependencies gathered!</h1>
                 <p>Hooray! We've managed to gather the dependencies for your project. Please report any bugs you may encounter (for example, missing items)!</p>
-                <table id="project-deps-table" class="subtle-table"></table>
+                <table id="project-deps-table" class="subtle-table">
+                    <thead>
+                        <tr>
+                            <th class="col-60">Title</th>
+                            <th class="col-20">Version</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
                 <div id="export-controllers">
                     <a href="#export-to-github" id="github-export" class="red-button">Export to Github</a>
                     <a href="#export-to-pivotal" id="pivotal-export" class="red-button">Export to Pivotal Tracker</a>
