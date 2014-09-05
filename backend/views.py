@@ -51,6 +51,8 @@ def check_for_updates(request):
 
     if latest_version > version:
         gav_string = group + ':' + artifact + ':' + latest_version
-        return JsonHttpResponseBuilder("UPDATE_FOUND", "New version:" + latest_version, {"gav_string": gav_string}).build()
+        return JsonHttpResponseBuilder("UPDATE_FOUND",
+                                       "New version:" + latest_version,
+                                       {"gav_string": gav_string, 'new_version': latest_version}).build()
     else:
         return JsonHttpResponseBuilder("UP-TO-DATE", "Up to date", {"gav_string": gav_string}).build()

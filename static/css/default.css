@@ -2,6 +2,8 @@ body {
     font-family: "Roboto", sans-serif;
     font-weight: 300;
     font-size: 13px;
+
+    background: #ECF0F1;
 }
 
 h1, h2, h3, h4, h5 {
@@ -115,10 +117,6 @@ form:hover .attached-button-wrap, input:focus ~ .attached-button-wrap {
     border-spacing: 0;
 }
 
-.subtle-table tr {
-    border-bottom: 1px solid #EEE;
-}
-
 .col-80 {
     width: 600px;
     text-align: left;
@@ -135,7 +133,7 @@ form:hover .attached-button-wrap, input:focus ~ .attached-button-wrap {
 
 .subtle-table td {
     padding: 8px;
-    border-bottom: 1px solid #EEE;
+    border-bottom: 1px solid #E0E0E0;
 }
 
 .subtle-table tr:hover td {
@@ -165,7 +163,7 @@ form:hover .attached-button-wrap, input:focus ~ .attached-button-wrap {
 }
 
 #project-deps-table .dependency-meta {
-    color: #CCC;
+    color: #AAA;
     font-size: 0.9em;
     display: block;
 }

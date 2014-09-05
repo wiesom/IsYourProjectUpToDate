@@ -25,7 +25,6 @@
                 <h1>Is your project up to date?</h1>
                 <p>As time flies, the libraries we all love to use get updated. Use this service to see if there are newer any versions for you to use in your projects.</p>
                 <form method="post" id="search-box">
-                    {% csrf_token %}
                     <input tabindex="0" name="github-info" placeholder="Ex: karllindmark/FizzBuzz" value="karllindmark/FizzBuzz" type="text">
                     <div class="attached-button-wrap">
                         <button tabindex="-1" class="attached-button"></button>
@@ -37,7 +36,6 @@
                 <h1>Project found!</h1>
                 <p>Not only did we find your project, but we've also managed to find the following files in it. You may select/deselect any files below.</p>
                 <form method="post" id="project-files-box">
-                    {% csrf_token %}
                     <table id="project-files-table" class="subtle-table"></table>
                     <input class="red-button" type="submit" value="Next">
                 </form>

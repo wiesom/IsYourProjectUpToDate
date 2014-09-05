@@ -20,12 +20,22 @@ function setupButtonsForExporting() {
     $('#email-export').click(function(event) {
         event.preventDefault();
 
-        var message = buildMessageForExport();
-        window.location.href = "mailto:?subject=Project%20Dependency%20Status&body=" + message;
+        window.location.href = "mailto:?subject=Project%20Dependency%20Status&body=" + buildMessageForExport();
     });
 
     function buildMessageForExport() {
-        return "We've found updates to the following libraries in your project:";
+        var message = "Hello world!\n\nWe've found updates to the following libraries used in your project:\n\n";
+        $('.has-update-available').each( function() {
+            var elem = $(this);
+            message += elem.attr('data-artifact') + " --> " +
+                       elem.attr('data-new-version') + ' (current: ' +
+                       elem.attr('data-version') + ')\n"' +
+                       elem.attr('data-group') + ":" +
+                       elem.attr('data-artifact') + ":" +
+                       elem.attr('data-new-version') + '"\n\n';
+        });
+        message += "# This list was generated via " + document.URL
+        return encodeURIComponent(message);
     }
 }
 
@@ -91,11 +101,9 @@ function setupStep2() {
             event.preventDefault();
 
             var form = $(this);
-            var file_paths = form.find("input[type='hidden']");
             var selected_files = form.find("input[type='checkbox']");
-            var csrf_token = form.find("input[name='csrfmiddlewaretoken']");
 
-            if (file_paths.length == 0 || selected_files.length == 0 || csrf_token.length == 0) {
+            if (selected_files.length == 0) {
                 alert("Notify about empty value");
                 return;
             }
@@ -107,8 +115,6 @@ function setupStep2() {
                     url:'/api/find-dependencies/',
                     data: form.serialize(),
                     success: function (data) {
-                        console.log(data);
-
                         var container = $('#project-deps-table');
                         container.children().remove();
 
@@ -173,6 +179,10 @@ function setupStep3() {
                     data: postdata,
                     success: function (data) {
                         status_elem.text(data['message']);
+                        if (data['status'] == 'UPDATE_FOUND') {
+                            this_elem.addClass("has-update-available");
+                            this_elem.attr("data-new-version", data['new_version']);
+                        }
                         button.attr('data-clipboard-text', data['gav_string']);
                         setupClipboard(button);
                     },
