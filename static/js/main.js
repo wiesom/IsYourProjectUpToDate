@@ -21,9 +21,8 @@ function setupButtonsForExporting() {
         event.preventDefault();
 
         var message = buildMessageForExport();
-        window.open("mailto:?subject=Project%20Dependency%20Status&body=" + message, "_blank")
+        window.location.href = "mailto:?subject=Project%20Dependency%20Status&body=" + message;
     });
-
 
     function buildMessageForExport() {
         return "We've found updates to the following libraries in your project:";
