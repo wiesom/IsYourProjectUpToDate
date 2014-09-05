@@ -36,6 +36,7 @@ h5 {
     width: 960px;
     margin: 0 auto;
     margin-top: 100px;
+    margin-bottom: 100px;
     text-align: center;
 }
 
@@ -43,6 +44,98 @@ h5 {
     clear: both;
 }
 
+
+.subtle-table {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 2em;
+    margin-top: 2em;
+    border-spacing: 0;
+}
+
+.col-80 {
+    width: 600px;
+    text-align: left;
+}
+
+.col-60 {
+    width: 450px;
+    text-align: left;
+}
+
+.col-20 {
+    width: 150px;
+}
+
+a {
+    color: #000;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #333;
+    text-decoration: underline;
+}
+
+.error {
+    padding: 8px;
+    margin-top: 8px;
+
+    border-left: 2px solid #FF4444;
+    background: rgba(255, 68, 68, 0.1);
+
+    text-align: left;
+    display: none;
+}
+
+.subtle-table th {
+    font-size: 1.2em;
+    font-weight: normal;
+    padding: 8px 8px;
+    color: #333;
+}
+
+.subtle-table tbody tr td {
+    padding: 8px;
+    border-top: 1px solid #E0E0E0;
+    background: #FFF;
+}
+
+.subtle-table tbody tr:last-child td {
+    border-bottom: 1px solid #E0E0E0;
+}
+
+.subtle-table tr:hover td {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.red-button {
+    min-width: 96px;
+    height: 42px;
+
+    color: #FFF;
+    padding: 8px;
+
+    border-radius: 2px;
+    box-sizing: border-box;
+    border: 1px solid #CCC;
+    background: #BBB;
+    text-decoration: none;
+    outline: none;
+}
+
+.red-button:hover {
+    color: #FFF;
+    box-shadow: 0 0 4px #FF4444;
+    background-color: #FF4444;
+    border: 1px solid #EE0000;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+
+/* Step 1 */
 #search-box {
     width: auto;
     height: 24px;
@@ -107,71 +200,6 @@ form:hover .attached-button-wrap, input:focus ~ .attached-button-wrap {
 /* Step #2 */
 #step-2 {
     display: none;
-}
-
-.subtle-table {
-    width: 80%;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 2em;
-    margin-top: 2em;
-    border-spacing: 0;
-}
-
-.col-80 {
-    width: 600px;
-    text-align: left;
-}
-
-.col-60 {
-    width: 450px;
-    text-align: left;
-}
-
-.col-20 {
-    width: 150px;
-}
-
-.subtle-table th {
-    font-size: 1.2em;
-    font-weight: normal;
-    padding: 8px 8px;
-    color: #333;
-}
-
-.subtle-table tbody tr td {
-    padding: 8px;
-    border-top: 1px solid #E0E0E0;
-}
-
-.subtle-table tbody tr:last-child td {
-    border-bottom: 1px solid #E0E0E0;
-}
-
-.subtle-table tr:hover td {
-    background: rgba(0, 0, 0, 0.05);
-}
-
-.red-button {
-    min-width: 96px;
-    height: 42px;
-
-    color: #FFF;
-    padding: 8px;
-
-    border-radius: 2px;
-    box-sizing: border-box;
-    border: 1px solid #CCC;
-    background: #BBB;
-    text-decoration: none;
-    outline: none;
-}
-
-.red-button:hover {
-    box-shadow: 0 0 4px #FF4444;
-    background-color: #FF4444;
-    border: 1px solid #EE0000;
-    cursor: pointer;
 }
 
 #project-deps-table .dependency-meta {

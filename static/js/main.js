@@ -45,10 +45,13 @@ function setupStep1() {
             event.preventDefault();
 
             var form = $(this);
+            var error_box = form.find('.error');
             var github_info = form.find("input[name='github-info']");
+            var validation_regex = /([a-z0-9-]+)\/([a-z0-9_.-]+)/ig;
 
-            if (github_info.length == 0) {
-                alert("Notify about empty value");
+            if (github_info.length == 0 || validation_regex.exec(github_info.val()) == null) {
+                error_box.text('Expected format: username/repo. ' +
+                               'Valid characters are alphanumerics, dashes and punctuations.').show();
                 return;
             }
 
@@ -61,6 +64,12 @@ function setupStep1() {
                     success: function (data) {
                         var container = $('#project-files-table');
                         container.find("tbody").remove();
+                        error_box.text("").hide();
+
+                        if (data['status'] != 'SUCCESS') {
+                            error_box.text(data['message']).show();
+                            return;
+                        }
 
                         $(data['files']).each(
                             function(index, item) {
@@ -87,7 +96,7 @@ function setupStep1() {
                         );
                     },
                     error: function (data) {
-                        console.log("[ERROR] data => " + data);
+                        error_box.text(data.responseText).show();
                     }
                 }
             );
@@ -101,10 +110,11 @@ function setupStep2() {
             event.preventDefault();
 
             var form = $(this);
-            var selected_files = form.find("input[type='checkbox']");
+            var error_box = form.find('.error');
+            var selected_files = form.find("input[type='checkbox']:checked");
 
             if (selected_files.length == 0) {
-                alert("Notify about empty value");
+                error_box.text("No files selected. You'll need to select at least one of the above.").show();
                 return;
             }
 
@@ -117,6 +127,12 @@ function setupStep2() {
                     success: function (data) {
                         var container = $('#project-deps-table');
                         container.find("tbody").remove();
+                        error_box.text("").show();
+
+                        if (data['status'] != 'SUCCESS') {
+                            error_box.text(data['message']).show();
+                            return;
+                        }
 
                         $(data['dependencies']).each(
                             function(index, item) {
@@ -147,7 +163,7 @@ function setupStep2() {
                         );
                     },
                     error: function (data) {
-                        console.log("[ERROR] data => " + data);
+                        error_box.text(data.responseText).show();
                     }
                 }
             );
@@ -180,11 +196,16 @@ function setupStep3() {
                     url: '/api/check-for-updates/',
                     data: postdata,
                     success: function (data) {
-                        status_elem.text(data['message']);
                         if (data['status'] == 'UPDATE_FOUND') {
                             this_elem.addClass("has-update-available");
                             this_elem.attr("data-new-version", data['new_version']);
+                            status_elem.html(data['message'] + '<span class="dependency-meta">Update available</span>');
+                        } else if (data['status'] == 'UP-TO-DATE') {
+                            status_elem.html(data['message'] + '<span class="dependency-meta">Up to date</span>');
+                        } else {
+                            status_elem.html(data['message'] + '<span class="dependency-meta">:-(</span>');
                         }
+
                         button.attr('data-clipboard-text', data['gav_string']);
                         setupClipboard(button);
                     },

@@ -7,7 +7,7 @@ import fnmatch
 from backend.GradleProjectFile import GradleProjectFile
 
 GITHUB_API_HOST = "https://api.github.com"
-GITHUB_LIST_URL = GITHUB_API_HOST + "/search/code?q=\.gradle+in:path+repo:{github_info}"
+GITHUB_LIST_URL = GITHUB_API_HOST + "/search/code?q=build.gradle+in:path+repo:{github_info}"
 
 MVN_CENTRAL_API = "http://search.maven.org/solrsearch"
 MVN_URL = MVN_CENTRAL_API + '/select?q=g:"{group}"+a:"{artifact}"'
@@ -21,10 +21,12 @@ def find_gradle_files(request):
     if not github_info:
         return HttpResponseBadRequest("Invalid request.")
 
-    data = requests.request('GET', GITHUB_LIST_URL.format(github_info=github_info)).json()['items']
-    gradle_files = [gradle_file for gradle_file in data if fnmatch.fnmatch(gradle_file['name'], "build.gradle")]
+    data = requests.request('GET', GITHUB_LIST_URL.format(github_info=github_info)).json()
+    if data.get('errors') or not data.get('items'):
+        return JsonHttpResponseBuilder("INVALID_USER_REPO", "Invalid user or repository name. Please try again.").build()
 
-    return JsonHttpResponseBuilder("OK", "", {"files": gradle_files}).build()
+    gradle_files = [gradle_file for gradle_file in data.get('items') if fnmatch.fnmatch(gradle_file['name'], "build.gradle")]
+    return JsonHttpResponseBuilder("SUCCESS", "", {"files": gradle_files}).build()
 
 def find_dependencies(request):
     selected_files = request.POST.getlist('selected')
@@ -33,7 +35,12 @@ def find_dependencies(request):
     for selected_file in selected_files:
         response = requests.get(selected_file.replace("/blob/", "/raw/"))
         dependencies.extend(GradleProjectFile(selected_file, response).extract())
-    return JsonHttpResponseBuilder("OK", "", {"dependencies": dependencies}).build()
+
+    if dependencies:
+        return JsonHttpResponseBuilder("SUCCESS", "Dependencies found.", {"dependencies": dependencies}).build()
+    else:
+        return JsonHttpResponseBuilder("NO_DEPENDENCIES", "No dependencies found.").build()
+
 
 def check_for_updates(request):
     group = request.POST.get("group")
@@ -47,12 +54,11 @@ def check_for_updates(request):
         return JsonHttpResponseBuilder("NOT_FOUND", "Not available in Maven Central.", {"gav_string": gav_string}).build()
 
     latest_version = response['docs'][0]['latestVersion']
-    latest_version_date = response['docs'][0]['timestamp']
 
     if latest_version > version:
         gav_string = group + ':' + artifact + ':' + latest_version
         return JsonHttpResponseBuilder("UPDATE_FOUND",
-                                       "New version\n" + latest_version,
+                                       str(latest_version),
                                        {"gav_string": gav_string, 'new_version': latest_version}).build()
     else:
-        return JsonHttpResponseBuilder("UP-TO-DATE", "Up to date", {"gav_string": gav_string}).build()
+        return JsonHttpResponseBuilder("UP-TO-DATE", str(latest_version), {"gav_string": gav_string}).build()
