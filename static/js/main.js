@@ -141,7 +141,7 @@ function setupStep2() {
             }
 
             form.attr("running", true);
-            showProgress(status_box, 'Gathering dependencies...');
+            showProgress(status_box, 'Gathering dependencies (this might take a while)...');
 
             $.ajax(
                 {
