@@ -2,7 +2,7 @@ from django.http import HttpResponse
 import json
 
 
-class JsonHttpResponseBuilder:
+class JsonHttpResponseBuilder(object):
     """ HttpReponse builder for JSON output """
     def __init__(self, status, message, extras=None):
         if not extras:

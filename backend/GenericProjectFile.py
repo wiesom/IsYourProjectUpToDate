@@ -1,4 +1,6 @@
-class GenericProjectFile ():
+""" Generic project file module """
+
+class GenericProjectFile(object):
     """ Base class that enforces a contract upon subclasses. Will enable easier extension in the future. :-) """
     def __init__(self, name, result):
         self.name = name

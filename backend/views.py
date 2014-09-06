@@ -1,21 +1,16 @@
 from distutils.version import LooseVersion
 from requests.packages.urllib3.exceptions import ProtocolError, ConnectionError, ConnectTimeoutError
-from JsonHttpResponseBuilder import JsonHttpResponseBuilder
+from backend.JsonHttpResponseBuilder import JsonHttpResponseBuilder
+from backend.GradleProjectFile import GradleProjectFile
 
 import requests
 import fnmatch
-from backend.GradleProjectFile import GradleProjectFile
 
 GITHUB_API_HOST = "https://api.github.com"
 GITHUB_LIST_URL = GITHUB_API_HOST + "/search/code?q=build.gradle+in:path+repo:{github_info}"
 
 MVN_CENTRAL_API = "http://search.maven.org/solrsearch"
 MVN_URL = MVN_CENTRAL_API + '/select?q=g:"{group}"+a:"{artifact}"'
-
-
-def main(request):
-    return JsonHttpResponseBuilder("NOT_IMPLEMENTED", ":-)")
-
 
 def find_gradle_files(request):
     github_info = request.POST.get('github-info')
