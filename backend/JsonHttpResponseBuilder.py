@@ -1,13 +1,21 @@
 from django.http import HttpResponse
 import json
 
+
 class JsonHttpResponseBuilder:
-    def __init__(self, status, message, extras={}):
+    """ HttpReponse builder for JSON output """
+    def __init__(self, status, message, extras=None):
+        if not extras:
+            extras = dict()
+
         self.status = status
         self.message = message
         self.extras = extras
 
     def build(self):
+        """
+        :return: HttpResponse object with JSON content
+        """
         response = {"status": self.status, "message": self.message}
         for key, value in self.extras.iteritems():
             response[key] = value

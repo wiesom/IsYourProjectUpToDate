@@ -5,7 +5,9 @@ QUOTE = '(?:["|\'])'
 STRING = '([\w\.\-\+]+)'
 GAV_REGEXP = QUOTE + '(?:' + ":".join([STRING, STRING, STRING]) + ')' + QUOTE
 
+
 class GradleProjectFile (GenericProjectFile):
+    """ Gradle project file implementation to extract dependencies """
     def extract(self):
         dependencies = []
         for line in self.result.iter_lines():
