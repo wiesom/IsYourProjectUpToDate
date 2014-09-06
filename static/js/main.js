@@ -27,9 +27,9 @@ function setupButtonsForExporting() {
         var message = "Hello world!\n\nWe've found updates to the following libraries used in your project:\n\n";
         $('.has-update-available').each( function() {
             var elem = $(this);
-            message += elem.attr('data-artifact') + " --> " +
-                       elem.attr('data-new-version') + ' (current: ' +
-                       elem.attr('data-version') + ')\n"' +
+            message += elem.attr('data-artifact') + ": " +
+                       elem.attr('data-version') + "--> " +
+                       elem.attr('data-new-version') + "\n" +
                        elem.attr('data-group') + ":" +
                        elem.attr('data-artifact') + ":" +
                        elem.attr('data-new-version') + '"\n\n';
@@ -127,7 +127,7 @@ function setupStep2() {
                     success: function (data) {
                         var container = $('#project-deps-table');
                         container.find("tbody").remove();
-                        error_box.text("").show();
+                        error_box.text("").hide();
 
                         if (data['status'] != 'SUCCESS') {
                             error_box.text(data['message']).show();
@@ -174,7 +174,11 @@ function setupStep2() {
 function setupStep3() {
     setupButtonsForExporting();
 
-    $('#project-deps-table').find('tr').each(
+
+    var container = $('#step-3');
+    var error_box = container.find('.error');
+
+    container.find('#project-deps-table').find('tbody tr').each(
         function () {
             var this_elem = $(this);
             var group = this_elem.attr('data-group');
@@ -210,8 +214,7 @@ function setupStep3() {
                         setupClipboard(button);
                     },
                     error: function (data) {
-                        console.log("ERROR in check-for-updates call");
-                        console.log(data);
+                        error_box.text(data.responseText).show();
                     }
                 }
             );
