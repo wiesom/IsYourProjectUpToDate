@@ -53,6 +53,10 @@ function setupStep1() {
             event.preventDefault();
 
             var form = $(this);
+            if (form.attr("running")) {
+                return;
+            }
+
             var status_box = form.find('.status');
             var github_info = form.find("input[name='github-info']");
             var validation_regex = /([a-z0-9-]+)\/([a-z0-9_.-]+)/ig;
@@ -63,6 +67,7 @@ function setupStep1() {
                 return;
             }
 
+            form.attr("running", true);
             showProgress(status_box, 'Searching...');
 
             $.ajax(
@@ -78,6 +83,7 @@ function setupStep1() {
 
                         if (data['status'] != 'SUCCESS') {
                             showError(status_box, data['message']);
+                            form.removeAttr("running");
                             return;
                         }
 
@@ -102,10 +108,12 @@ function setupStep1() {
                             400, function() {
                                 setupStep2();
                                 $("#step-2").fadeIn(400);
+                                form.removeAttr("running");
                             }
                         );
                     },
                     error: function (data) {
+                        form.removeAttr("running");
                         showError(status_box, data.responseText);
                     }
                 }
@@ -120,6 +128,10 @@ function setupStep2() {
             event.preventDefault();
 
             var form = $(this);
+            if (form.attr("running")) {
+                return;
+            }
+
             var status_box = form.find('.status');
             var selected_files = form.find("input[type='checkbox']:checked");
 
@@ -128,6 +140,7 @@ function setupStep2() {
                 return;
             }
 
+            form.attr("running", true);
             showProgress(status_box, 'Gathering dependencies...');
 
             $.ajax(
@@ -143,6 +156,7 @@ function setupStep2() {
 
                         if (data['status'] != 'SUCCESS') {
                             showError(status_box, data['message']);
+                            form.removeAttr("running");
                             return;
                         }
 
@@ -170,11 +184,13 @@ function setupStep2() {
                         // Last but not least
                         $('#step-2').fadeOut(
                             400, function() {
+                                form.removeAttr("running");
                                 $("#step-3").fadeIn(400, setupStep3());
                             }
                         );
                     },
                     error: function (data) {
+                        form.removeAttr("running");
                         showError(status_box, data.responseText);
                     }
                 }
