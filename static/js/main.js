@@ -39,21 +39,31 @@ function setupButtonsForExporting() {
     }
 }
 
+function showError(element, text) {
+    element.text(text).addClass('error').removeClass('neutral').show()
+}
+
+function showProgress(element, text) {
+    element.text(text).addClass('neutral').removeClass('error').show();
+}
+
 function setupStep1() {
     $('#search-box').submit(
         function(event) {
             event.preventDefault();
 
             var form = $(this);
-            var error_box = form.find('.error');
+            var status_box = form.find('.status');
             var github_info = form.find("input[name='github-info']");
             var validation_regex = /([a-z0-9-]+)\/([a-z0-9_.-]+)/ig;
 
             if (github_info.length == 0 || validation_regex.exec(github_info.val()) == null) {
-                error_box.text('Expected format: username/repo. ' +
-                               'Valid characters are alphanumerics, dashes and punctuations.').show();
+                showError(status_box, 'Expected format: username/repo. ' +
+                                      'Valid characters are alphanumerics, dashes and punctuations.');
                 return;
             }
+
+            showProgress(status_box, 'Searching...');
 
             $.ajax(
                 {
@@ -64,10 +74,10 @@ function setupStep1() {
                     success: function (data) {
                         var container = $('#project-files-table');
                         container.find("tbody").remove();
-                        error_box.text("").hide();
+                        status_box.text("").hide();
 
                         if (data['status'] != 'SUCCESS') {
-                            error_box.text(data['message']).show();
+                            showError(status_box, data['message']);
                             return;
                         }
 
@@ -96,7 +106,7 @@ function setupStep1() {
                         );
                     },
                     error: function (data) {
-                        error_box.text(data.responseText).show();
+                        showError(status_box, data.responseText);
                     }
                 }
             );
@@ -110,13 +120,15 @@ function setupStep2() {
             event.preventDefault();
 
             var form = $(this);
-            var error_box = form.find('.error');
+            var status_box = form.find('.status');
             var selected_files = form.find("input[type='checkbox']:checked");
 
             if (selected_files.length == 0) {
-                error_box.text("No files selected. You'll need to select at least one of the above.").show();
+                showError(status_box, "No files selected. You'll need to select at least one of the above.");
                 return;
             }
+
+            showProgress(status_box, 'Gathering dependencies...');
 
             $.ajax(
                 {
@@ -127,10 +139,10 @@ function setupStep2() {
                     success: function (data) {
                         var container = $('#project-deps-table');
                         container.find("tbody").remove();
-                        error_box.text("").hide();
+                        status_box.text("").hide();
 
                         if (data['status'] != 'SUCCESS') {
-                            error_box.text(data['message']).show();
+                            showError(status_box, data['message']);
                             return;
                         }
 
@@ -163,7 +175,7 @@ function setupStep2() {
                         );
                     },
                     error: function (data) {
-                        error_box.text(data.responseText).show();
+                        showError(status_box, data.responseText);
                     }
                 }
             );
@@ -176,7 +188,7 @@ function setupStep3() {
 
 
     var container = $('#step-3');
-    var error_box = container.find('.error');
+    var status_box = container.find('.status');
 
     container.find('#project-deps-table').find('tbody tr').each(
         function () {
@@ -214,7 +226,7 @@ function setupStep3() {
                         setupClipboard(button);
                     },
                     error: function (data) {
-                        error_box.text(data.responseText).show();
+                        showError(status_box, data.responseText);
                     }
                 }
             );
