@@ -1,5 +1,6 @@
 from datetime import date
 from django.http import HttpResponse, HttpResponseBadRequest
+from requests.packages.urllib3.exceptions import ProtocolError, ConnectionError, ConnectTimeoutError
 from JsonHttpResponseBuilder import JsonHttpResponseBuilder
 
 import requests
@@ -14,18 +15,23 @@ MVN_URL = MVN_CENTRAL_API + '/select?q=g:"{group}"+a:"{artifact}"'
 
 def main(request):
     return JsonHttpResponseBuilder("NOT_IMPLEMENTED", ":-)")
-
+# TODO: Server side validation + session based throttling (IE no outbound requests if nonce in session is expired)
 
 def find_gradle_files(request):
     github_info = request.POST.get('github-info')
     if not github_info:
         return HttpResponseBadRequest("Invalid request.")
 
-    data = requests.request('GET', GITHUB_LIST_URL.format(github_info=github_info)).json()
-    if data.get('errors') or not data.get('items'):
+    url = GITHUB_LIST_URL.format(github_info=github_info)
+    try:
+        response = requests.get(url).json()
+    except (ProtocolError, ConnectTimeoutError, ConnectionError):
+        return JsonHttpResponseBuilder("ERROR", "Request failed while connecting to Github. Please try again later.").build()
+
+    if response.get('errors') or not response.get('items'):
         return JsonHttpResponseBuilder("INVALID_USER_REPO", "Invalid user or repository name. Please try again.").build()
 
-    gradle_files = [gradle_file for gradle_file in data.get('items') if fnmatch.fnmatch(gradle_file['name'], "build.gradle")]
+    gradle_files = [gradle_file for gradle_file in response.get('items') if fnmatch.fnmatch(gradle_file['name'], "build.gradle")]
     return JsonHttpResponseBuilder("SUCCESS", "", {"files": gradle_files}).build()
 
 def find_dependencies(request):
@@ -33,7 +39,10 @@ def find_dependencies(request):
 
     dependencies = []
     for selected_file in selected_files:
-        response = requests.get(selected_file.replace("/blob/", "/raw/"))
+        try:
+            response = requests.get(selected_file.replace("/blob/", "/raw/"))
+        except (ProtocolError, ConnectTimeoutError, ConnectionError):
+            return JsonHttpResponseBuilder("ERROR", "Request failed while fetching the project files. Please try again later.").build()
         dependencies.extend(GradleProjectFile(selected_file, response).extract())
 
     if dependencies:
@@ -49,8 +58,12 @@ def check_for_updates(request):
     gav_string = group + ':' + artifact + ':' + version
 
     url = MVN_URL.format(group=group, artifact=artifact)
-    response = requests.get(url).json()['response']
-    if response['numFound'] == 0:
+    try:
+        response = requests.get(url).json()['response']
+    except (ProtocolError, ConnectTimeoutError, ConnectionError, KeyError):
+        return JsonHttpResponseBuilder("ERROR", "Request failed. Please try again later.").build()
+
+    if response.get('numFound', 0) == 0:
         return JsonHttpResponseBuilder("NOT_FOUND", "Not available in Maven Central.", {"gav_string": gav_string}).build()
 
     latest_version = response['docs'][0]['latestVersion']
