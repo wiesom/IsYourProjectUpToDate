@@ -119,17 +119,20 @@ a:hover {
 
     border-radius: 2px;
     box-sizing: border-box;
-    border: 1px solid #CCC;
-    background: #BBB;
     text-decoration: none;
     outline: none;
+
+
+    box-shadow: 0 0 4px #FF4444;
+    background-color: #FF4444;
+    border: 1px solid #EE0000;
 }
 
 .red-button:hover {
     color: #FFF;
-    box-shadow: 0 0 4px #FF4444;
-    background-color: #FF4444;
-    border: 1px solid #EE0000;
+    box-shadow: 0 0 4px #ff5f5f;
+    background-color: #ff5f5f;
+    border: 1px solid #f05656;
     cursor: pointer;
     text-decoration: none;
 }
@@ -211,6 +214,10 @@ form:hover .attached-button-wrap, input:focus ~ .attached-button-wrap {
 /* Step 3 */
 #step-3 {
     display: none;
+}
+
+#export-controllers {
+    margin-top: 1em;
 }
 
 #export-controllers a {
