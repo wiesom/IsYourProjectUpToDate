@@ -131,7 +131,7 @@ a:hover {
     border: 1px solid #EE0000;
 }
 
-.red-button:hover {
+.red-button:hover, .red-button.zeroclipboard-is-hover {
     color: #FFF;
     box-shadow: 0 0 4px #ff5f5f;
     background-color: #ff5f5f;

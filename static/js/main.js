@@ -10,9 +10,11 @@ $(document).ready(
 );
 
 function setupClipboard(element) {
-    element.click(function() {
-        /* TODO: Add opening of modal with GAV to copy */
-        alert("TODO: Open modal with link in input box")
+    var client = new ZeroClipboard(element, { moviePath: "ZeroClipboard.swf", debug: false });
+    client.on( "load", function(client) {
+        client.on( "complete", function(client, args) {
+            client.setText(args.text);
+        });
     });
 }
 
