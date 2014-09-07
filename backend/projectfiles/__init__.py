@@ -3,6 +3,7 @@ from backend.projectfiles.GradleProjectFile import GradleProjectFile
 from backend.projectfiles.MavenProjectFile import MavenProjectFile
 
 MVN_CENTRAL_API = 'http://search.maven.org/solrsearch/select?q=g:"{group}"+a:"{artifact}"'
+RUBYGEMS_API = "https://rubygems.org/api/v1/gems/{artifact}.json"
 PROJECT_FILES = {
     "gradle": {
         "name": "Gradle",
@@ -12,7 +13,12 @@ PROJECT_FILES = {
         "name": "Maven",
         "file": "pom.xml",
         "urls": [MVN_CENTRAL_API]
-    }
+    },
+    "rubygems": {
+        "name": "Rubygems",
+        "file": "Rubygems",
+        "urls": [RUBYGEMS_API]
+      }
 }
 
 
