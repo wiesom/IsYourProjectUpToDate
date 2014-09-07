@@ -34,7 +34,7 @@ function setupButtonsForExporting() {
                        elem.attr('data-artifact') + ":" +
                        elem.attr('data-new-version') + '"\n\n';
         });
-        message += "# This list was generated via " + document.URL
+        message += "# This list was generated via " + document.URL;
         return encodeURIComponent(message);
     }
 }
@@ -169,6 +169,7 @@ function setupStep2() {
 
                         $(data['dependencies']).each(
                             function(index, item) {
+                                var element_id = "progress-" + item['a'].replace(/\./g, "_");
                                 var new_element = $(
                                     '<tr data-group="' + item['g']+ '" data-artifact="' + item['a'] + '" data-version="' + item['v'] + '">' +
                                     '    <td class="col-60">' +
@@ -176,7 +177,7 @@ function setupStep2() {
                                     '        <span class="dependency-meta">' + item['g'] +'</span>' +
                                     '        <span class="dependency-meta">' + item['v'] + '</span>' +
                                     '    </td>' +
-                                    '    <td class="col-20" style="white-space: pre" id="progress-' + item['a'] + '">' +
+                                    '    <td class="col-20" style="white-space: pre" id="' + element_id + '">' +
                                     '        Checking...' +
                                     '    </td>' +
                                     '    <td class="col-20">' +
@@ -213,14 +214,14 @@ function setupStep3() {
     var container = $('#step-3');
     var status_box = container.find('.status');
     var project_type = $('select[name="project-type').val();
-    
+
     container.find('#project-deps-table').find('tbody tr').each(
         function () {
             var this_elem = $(this);
             var group = this_elem.attr('data-group');
             var artifact = this_elem.attr('data-artifact');
             var version = this_elem.attr('data-version');
-            var status_elem = this_elem.find('#progress-' + artifact);
+            var status_elem = this_elem.find('#progress-' + artifact.replace(/\./g, '_'));
             var button = this_elem.find("a.clipboard-button");
 
             var postdata = {
