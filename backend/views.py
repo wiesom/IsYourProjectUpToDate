@@ -1,10 +1,12 @@
 from distutils.version import LooseVersion
-from requests.packages.urllib3.exceptions import ProtocolError, ConnectionError, ConnectTimeoutError
-from backend.JsonHttpResponseBuilder import JsonHttpResponseBuilder
-from backend.GradleProjectFile import GradleProjectFile
-
-import requests
 import fnmatch
+
+from requests.packages.urllib3.exceptions import ProtocolError, ConnectionError, ConnectTimeoutError
+import requests
+
+from backend.JsonHttpResponseBuilder import JsonHttpResponseBuilder
+from backend.projectfiles.GradleProjectFile import GradleProjectFile
+
 
 GITHUB_API_HOST = "https://api.github.com"
 GITHUB_LIST_URL = GITHUB_API_HOST + "/search/code?q=build.gradle+in:path+repo:{github_info}"
