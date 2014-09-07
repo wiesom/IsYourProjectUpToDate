@@ -1,6 +1,7 @@
 """ Module for the different project files """
 from backend.projectfiles.GradleProjectFile import GradleProjectFile
 from backend.projectfiles.MavenProjectFile import MavenProjectFile
+from backend.projectfiles.RubygemsProjectFile import RubygemsProjectFile
 
 MVN_CENTRAL_API = 'http://search.maven.org/solrsearch/select?q=g:"{group}"+a:"{artifact}"'
 RUBYGEMS_API = "https://rubygems.org/api/v1/gems/{artifact}.json"
@@ -31,5 +32,7 @@ class ProjectFileBuilder(object):
             return GradleProjectFile(name, result)
         elif type == 'maven':
             return MavenProjectFile(name, result)
+        elif type == 'rubygems':
+            return RubygemsProjectFile(name, result)
         else:
             raise NotImplementedError('Type "%s" has not been implemented.' % type)
