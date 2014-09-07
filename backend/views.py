@@ -10,6 +10,19 @@ from backend.projectfiles import ProjectFileBuilder, PROJECT_FILES
 GITHUB_API_HOST = "https://api.github.com"
 GITHUB_LIST_URL = GITHUB_API_HOST + "/search/code?q={project_file}+in:path+repo:{github_info}"
 
+def not_in(excludes, file_path):
+    if not excludes:
+        # No excludes is used for this project
+        return True
+    for excluded_path in excludes:
+        # There are excludes in this project
+        if fnmatch.fnmatch(file_path, excluded_path):
+            # If the path matches the excluded path, return False
+            # Indicating that the given path should be excluded
+            return False
+    # If we've searched in all the excluded paths and didn't find any match
+    return True
+
 
 def find_project_files(request):
     github_info = request.POST.get('github-info')
@@ -34,7 +47,9 @@ def find_project_files(request):
 
     project_files = [file_path
                      for file_path in response.get('items')
-                     if fnmatch.fnmatch(file_path['name'], project.get('file'))]
+                     if fnmatch.fnmatch(file_path['name'], project.get('file')) 
+                        and not_in(project.get("excludes"),str(file_path['path']))]
+
     return JsonHttpResponseBuilder("SUCCESS", "", {"files": project_files}).build()
 
 
