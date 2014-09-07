@@ -16,8 +16,9 @@ PROJECT_FILES = {
     },
     "rubygems": {
         "name": "Rubygems",
-        "file": "Rubygems",
-        "urls": [RUBYGEMS_API]
+        "file": "Gemfile",
+        "urls": [RUBYGEMS_API],
+        "excludes": ["vendor/*"]
       }
 }
 
