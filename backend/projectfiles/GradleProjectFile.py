@@ -1,6 +1,6 @@
 import re
 
-from backend.projectfiles import GenericProjectFile
+from backend.projectfiles.GenericProjectFile import GenericProjectFile
 
 
 QUOTE = r'(?:["|\'])'
@@ -18,6 +18,8 @@ class GradleProjectFile(GenericProjectFile):
                 group = results.group(1)
                 artifact = results.group(2)
                 version = results.group(3)
-                dependencies.append({'g': group, 'a': artifact, 'v': version})
+                dependencies.append({'g': group,
+                                     'a': artifact,
+                                     'v': version})
         return dependencies
 

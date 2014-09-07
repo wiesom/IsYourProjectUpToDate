@@ -5,42 +5,47 @@ from requests.packages.urllib3.exceptions import ProtocolError, ConnectionError,
 import requests
 
 from backend.JsonHttpResponseBuilder import JsonHttpResponseBuilder
-from backend.projectfiles.GradleProjectFile import GradleProjectFile
-
+from backend.projectfiles import ProjectFileBuilder, PROJECT_FILES
 
 GITHUB_API_HOST = "https://api.github.com"
-GITHUB_LIST_URL = GITHUB_API_HOST + "/search/code?q=build.gradle+in:path+repo:{github_info}"
+GITHUB_LIST_URL = GITHUB_API_HOST + "/search/code?q={project_file}+in:path+repo:{github_info}"
 
-MVN_CENTRAL_API = "http://search.maven.org/solrsearch"
-MVN_URL = MVN_CENTRAL_API + '/select?q=g:"{group}"+a:"{artifact}"'
 
-def find_gradle_files(request):
+def find_project_files(request):
     github_info = request.POST.get('github-info')
-    if not github_info:
-        return JsonHttpResponseBuilder("ERROR", "Invalid request.")
+    project_type = request.POST.get('project-type')
+    project = PROJECT_FILES.get(project_type)
 
-    url = GITHUB_LIST_URL.format(github_info=github_info)
+    if not github_info or not project_type:
+        return JsonHttpResponseBuilder("ERROR", "Oops, something bad happened.").build()
+    elif not project:
+        return JsonHttpResponseBuilder("ERROR", "Unsupported project type: " + project_type).build()
+
+    url = GITHUB_LIST_URL.format(project_file=project.get('file'), github_info=github_info)
     try:
         response = requests.get(url).json()
     except (ProtocolError, ConnectTimeoutError, ConnectionError):
-        return JsonHttpResponseBuilder("ERROR",
-                                       "Request failed while connecting to Github. " +
-                                       "Please try again later.").build()
+        return JsonHttpResponseBuilder("ERROR", "Unable to connect to Github. Please try again later.").build()
 
     if response.get('errors'):
         return JsonHttpResponseBuilder("ERROR", "Invalid user or repository name. Please try again.").build()
     elif not response.get('items'):
-        return JsonHttpResponseBuilder("ERROR",
-                                       "The given project is not running Gradle. Unable to help at the moment").build()
+        return JsonHttpResponseBuilder("ERROR", "The given project is not using " + project.get('name') + ".").build()
 
-    gradle_files = [gradle_file
-                    for gradle_file in response.get('items')
-                    if fnmatch.fnmatch(gradle_file['name'], "build.gradle")]
-    return JsonHttpResponseBuilder("SUCCESS", "", {"files": gradle_files}).build()
+    project_files = [file_path
+                     for file_path in response.get('items')
+                     if fnmatch.fnmatch(file_path['name'], project.get('file'))]
+    return JsonHttpResponseBuilder("SUCCESS", "", {"files": project_files}).build()
 
 
 def find_dependencies(request):
     selected_files = request.POST.getlist('selected')
+    project_type = request.POST.get('project-type')
+
+    if not selected_files:
+        return JsonHttpResponseBuilder("ERROR", "No project files selected.").build()
+    elif not project_type:
+        return JsonHttpResponseBuilder("ERROR", "No project type selected.").build()
 
     dependencies = []
     for selected_file in selected_files:
@@ -50,7 +55,7 @@ def find_dependencies(request):
             return JsonHttpResponseBuilder("ERROR",
                                            "Request failed while fetching the project files. " +
                                            "Please try again later.").build()
-        dependencies.extend(GradleProjectFile(selected_file, response).extract())
+        dependencies.extend(ProjectFileBuilder.create(project_type, selected_file, response).extract())
 
     if dependencies:
         return JsonHttpResponseBuilder("SUCCESS", "Dependencies found.", {"dependencies": dependencies}).build()
@@ -58,27 +63,36 @@ def find_dependencies(request):
         return JsonHttpResponseBuilder("NO_DEPENDENCIES", "No dependencies found.").build()
 
 
+# TODO: This is too specific for Gradle + Maven (especially Maven Central)
 def check_for_updates(request):
     group = request.POST.get("group")
     artifact = request.POST.get("artifact")
     version = request.POST.get("version")
+    project_type = request.POST.get("project-type")
+
+    if not project_type:
+        return JsonHttpResponseBuilder("ERROR", "Missing project type.").build()
+
     gav_string = group + ':' + artifact + ':' + version
 
-    url = MVN_URL.format(group=group, artifact=artifact)
-    try:
-        response = requests.get(url).json()['response']
-    except (ProtocolError, ConnectTimeoutError, ConnectionError, KeyError):
-        return JsonHttpResponseBuilder("ERROR", "Request failed. Please try again later.").build()
+    urls = PROJECT_FILES[project_type]['urls']
+    for url in urls:
+        url = url.format(group=group, artifact=artifact)
+        try:
+            response = requests.get(url).json()['response']
+        except (ProtocolError, ConnectTimeoutError, ConnectionError, KeyError):
+            return JsonHttpResponseBuilder("ERROR", "Request failed. Please try again later.").build()
 
-    if response.get('numFound', 0) == 0:
-        return JsonHttpResponseBuilder("ERROR", "Not available in Maven Central.", {"gav_string": gav_string}).build()
+        if response.get('numFound', 0) == 0:
+            continue
 
-    latest_version = response['docs'][0]['latestVersion']
+        latest_version = response['docs'][0]['latestVersion']
 
-    if version != '+' and LooseVersion(latest_version) > LooseVersion(version):
-        gav_string = group + ':' + artifact + ':' + latest_version
-        return JsonHttpResponseBuilder("UPDATE_FOUND",
-                                       str(latest_version),
-                                       {"gav_string": gav_string, 'new_version': latest_version}).build()
-    else:
-        return JsonHttpResponseBuilder("UP-TO-DATE", str(latest_version), {"gav_string": gav_string}).build()
+        if version != '+' and LooseVersion(latest_version) > LooseVersion(version):
+            gav_string = group + ':' + artifact + ':' + latest_version
+            return JsonHttpResponseBuilder("UPDATE_FOUND",
+                                           str(latest_version),
+                                           {"gav_string": gav_string, 'new_version': latest_version}).build()
+        else:
+            return JsonHttpResponseBuilder("UP-TO-DATE", str(latest_version), {"gav_string": gav_string}).build()
+    return JsonHttpResponseBuilder("ERROR", "Not available in Maven Central.", {"gav_string": gav_string}).build()

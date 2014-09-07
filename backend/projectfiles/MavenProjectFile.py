@@ -1,5 +1,6 @@
-from backend.projectfiles import GenericProjectFile
+from backend.projectfiles.GenericProjectFile import GenericProjectFile
 from bs4 import BeautifulSoup
+
 
 class MavenProjectFile(GenericProjectFile):
     """ Maven project file implementation to extract dependencies """

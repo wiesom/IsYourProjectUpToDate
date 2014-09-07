@@ -48,6 +48,10 @@ function showProgress(element, text) {
 }
 
 function setupStep1() {
+    $('a[data-target]').click(function() {
+        $('#' + $(this).attr('data-target')).slideToggle(400);
+    });
+
     $('#search-box').submit(
         function(event) {
             event.preventDefault();
@@ -74,7 +78,7 @@ function setupStep1() {
                 {
                     type: "POST",
                     dataType: 'json',
-                    url:'/api/find-gradle-files/',
+                    url:'/api/find-project-files/',
                     data: form.serialize(),
                     success: function (data) {
                         var container = $('#project-files-table');
@@ -134,21 +138,24 @@ function setupStep2() {
 
             var status_box = form.find('.status');
             var selected_files = form.find("input[type='checkbox']:checked");
+            var project_type = $('select[name="project-type"]').val();
 
             if (selected_files.length == 0) {
                 showError(status_box, "No files selected. You'll need to select at least one of the above.");
+                return;
+            } else if (project_type == undefined) {
+                showError(status_box, "No project type selected.");
                 return;
             }
 
             form.attr("running", true);
             showProgress(status_box, 'Gathering dependencies (this might take a while)...');
-
             $.ajax(
                 {
                     type: "POST",
                     dataType: 'json',
                     url:'/api/find-dependencies/',
-                    data: form.serialize(),
+                    data: form.serialize() + "&project-type=" + encodeURIComponent(project_type),
                     success: function (data) {
                         var container = $('#project-deps-table');
                         container.find("tbody").remove();
@@ -205,7 +212,8 @@ function setupStep3() {
 
     var container = $('#step-3');
     var status_box = container.find('.status');
-
+    var project_type = $('select[name="project-type').val();
+    
     container.find('#project-deps-table').find('tbody tr').each(
         function () {
             var this_elem = $(this);
@@ -218,7 +226,8 @@ function setupStep3() {
             var postdata = {
                 'group': group,
                 'artifact': artifact,
-                'version': version
+                'version': version,
+                'project-type': project_type
             };
 
             $.ajax(

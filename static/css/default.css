@@ -153,6 +153,31 @@ form {
     margin-top: 2.6em;
 }
 
+#dropdown-options {
+    display: none;
+    text-align: left;
+    background: #FFF;
+    padding: 8px;
+    margin-top: 8px;
+    border-radius: 2px;
+    border: 1px solid #CCC;
+}
+
+#dropdown-options > * {
+    display: block;
+    margin-bottom: 8px;
+}
+
+#dropdown-options > :last-child {
+    margin-bottom: 0;
+}
+
+#search-bar-and-button {
+    border: 0;
+    margin: 0;
+    padding: 0;
+}
+
 input[type="text"] {
     width: 500px;
     height: 24px;
@@ -163,7 +188,7 @@ input[type="text"] {
     box-shadow: 0 0 0 #FF4444;
 }
 
-form:hover input[type="text"], input[type="text"]:focus {
+#search-bar-and-button:hover input[type="text"], input[type="text"]:hover, input[type="text"]:focus {
     box-shadow: 0 0 4px #FF4444;
     border: 1px solid #FF4444;
     outline: none;
@@ -193,10 +218,14 @@ form:hover input[type="text"], input[type="text"]:focus {
 
 }
 
-form:hover .attached-button-wrap, input:focus ~ .attached-button-wrap {
+#search-bar-and-button:hover .attached-button-wrap, input:focus ~ .attached-button-wrap {
     box-shadow: 1px 0 4px #FF4444;
     background-color: #FF4444;
     border: 1px solid #EE0000;
+}
+
+.attached-button-wrap:hover {
+    border-radius: 2px;
 }
 
 .attached-button {

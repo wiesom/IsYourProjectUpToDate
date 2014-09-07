@@ -25,9 +25,22 @@
                 <h1>Is your project up to date?</h1>
                 <p>As time flies, the libraries we all love to use get updated. Use this service to see if there are newer any versions for you to use in your projects.</p>
                 <form method="post" id="search-box">
-                    <input tabindex="0" name="github-info" placeholder="Ex: karllindmark/FizzBuzz" value="karllindmark/FizzBuzz" type="text">
-                    <div class="attached-button-wrap">
-                        <button tabindex="-1" class="attached-button"></button>
+                    <fieldset id="search-bar-and-button">
+                        <input tabindex="0" name="github-info" placeholder="Ex: karllindmark/FizzBuzz" value="karllindmark/FizzBuzz" type="text">
+                        <div class="attached-button-wrap">
+                            <button tabindex="-1" class="attached-button"></button>
+                        </div>
+                    </fieldset>
+                    <div>
+                        <a href="#" style="text-align: right; color: #AAA; margin-top: 8px; display: block; clear: both;" data-target="dropdown-options">Click here for more options</a>
+                        <div id="dropdown-options">
+                            <label for="project-type">Project type</label>
+                            <select id="project-type" name="project-type">
+                                {% for key, value in project_types.iteritems %}
+                                <option value="{{ key }}">{{ value.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
                     </div>
                     <div class="status" style="margin-top: 16px"></div>
                     <div class="clearfix"></div>
