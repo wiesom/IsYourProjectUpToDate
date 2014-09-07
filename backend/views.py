@@ -35,8 +35,10 @@ def find_project_files(request):
     project_files = [file_path
                      for file_path in response.get('items')
                      if fnmatch.fnmatch(file_path['name'], project.get('file'))]
-    return JsonHttpResponseBuilder("SUCCESS", "", {"files": project_files}).build()
-
+    if project_files:
+        return JsonHttpResponseBuilder("SUCCESS", "", {"files": project_files}).build()
+    else:
+        return JsonHttpResponseBuilder("ERROR", "No valid project files found.").build()
 
 def find_dependencies(request):
     selected_files = request.POST.getlist('selected')
@@ -60,10 +62,10 @@ def find_dependencies(request):
     if dependencies:
         return JsonHttpResponseBuilder("SUCCESS", "Dependencies found.", {"dependencies": dependencies}).build()
     else:
-        return JsonHttpResponseBuilder("NO_DEPENDENCIES", "No dependencies found.").build()
+        return JsonHttpResponseBuilder("NO_DEPENDENCIES", "No project files found.").build()
 
 
-# TODO: This is too specific for Gradle + Maven (especially Maven Central)
+# FIXME: This is too specific for Gradle + Maven (especially Maven Central)
 def check_for_updates(request):
     group = request.POST.get("group")
     artifact = request.POST.get("artifact")
