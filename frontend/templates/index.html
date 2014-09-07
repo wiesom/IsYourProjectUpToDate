@@ -26,6 +26,7 @@
                 <h1>Is your project up to date?</h1>
                 <p>As time flies, the libraries we all love to use get updated. Use this service to see if there are newer any versions for you to use in your projects.</p>
                 <form method="post" id="search-box">
+                    <div class="status" style="margin-bottom: 16px"></div>
                     <fieldset id="search-bar-and-button">
                         <input tabindex="0" name="github-info" placeholder="Ex: karllindmark/FizzBuzz" value="karllindmark/FizzBuzz" type="text">
                         <div class="attached-button-wrap">
@@ -33,7 +34,7 @@
                         </div>
                     </fieldset>
                     <div>
-                        <a href="#" style="text-align: right; color: #AAA; margin-top: 8px; display: block; clear: both;" data-target="dropdown-options">Click here for more options</a>
+                        <a href="#" class="dropdown-trigger" data-target="dropdown-options">Click here for more options</a>
                         <div id="dropdown-options">
                             <label for="project-type">Project type</label>
                             <select id="project-type" name="project-type">
@@ -43,7 +44,6 @@
                             </select>
                         </div>
                     </div>
-                    <div class="status" style="margin-top: 16px"></div>
                     <div class="clearfix"></div>
                 </form>
             </section>
@@ -67,6 +67,7 @@
             <section id="step-3">
                 <h1>Dependencies gathered!</h1>
                 <p>Hooray! We've managed to gather the dependencies for your project. Please report any bugs you may encounter (for example, missing items)!</p>
+                <div class="status"></div>
                 <table id="project-deps-table" class="subtle-table">
                     <thead>
                         <tr>
@@ -76,7 +77,6 @@
                     </thead>
                     <tbody></tbody>
                 </table>
-                <div class="status"></div>
                 <div id="export-controllers">
                     <a id="github-export" class="red-button">Export to Github</a>
                     <a id="pivotal-export" class="red-button">Export to Pivotal Tracker</a>

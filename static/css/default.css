@@ -153,6 +153,14 @@ form {
     margin-top: 2.6em;
 }
 
+.dropdown-trigger {
+    text-align: right;
+    color: #AAA;
+    margin-top: 8px;
+    display: block;
+    clear: both;
+}
+
 #dropdown-options {
     display: none;
     text-align: left;

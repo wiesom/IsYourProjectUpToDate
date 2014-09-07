@@ -76,7 +76,7 @@ function setupStep1() {
             }
 
             form.attr("running", true);
-            showProgress(status_box, 'Searching...');
+            showProgress(status_box, 'Searching for ' + github_info.val() + ' on Github...');
 
             $.ajax(
                 {
