@@ -89,3 +89,28 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
     '/var/www/static/',
 )
+
+# LOGGING
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console':{
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+    },
+    'formatters' : {
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'loggers': {
+        'YOLO': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        }
+    }
+}
