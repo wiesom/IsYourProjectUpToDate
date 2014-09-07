@@ -3,7 +3,7 @@
     <head>
         {% load staticfiles %}
         <title>Is your project up to date?</title>
-        <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css">
+        <link rel="stylesheet" href="//normalize-css.googlecode.com/svn/trunk/normalize.css">
         <link href='//fonts.googleapis.com/css?family=Roboto:300,700' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" href="{% static "css/default.css" %}">
 
@@ -37,7 +37,7 @@
                             <label for="project-type">Project type</label>
                             <select id="project-type" name="project-type">
                                 {% for key, value in project_types.iteritems %}
-                                <option value="{{ key }}">{{ value.name }}</option>
+                                <option value="{{ key }}"{% if key == 'gradle' %}{{ ' selected' }}{% endif %}>{{ value.name }}</option>
                                 {% endfor %}
                             </select>
                         </div>
