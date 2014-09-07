@@ -1,4 +1,5 @@
-""" Generic project file module """
+""" Module for the different project files """
+
 
 class GenericProjectFile(object):
     """ Base class that enforces a contract upon subclasses. Will enable easier extension in the future. :-) """

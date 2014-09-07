@@ -1,5 +1,7 @@
 import re
-from backend.GenericProjectFile import GenericProjectFile
+
+from backend.projectfiles import GenericProjectFile
+
 
 QUOTE = r'(?:["|\'])'
 STRING = r'([\w\.\-\+]+)'
