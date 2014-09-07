@@ -22,16 +22,18 @@ function setupButtonsForExporting() {
     $('#email-export').click(function(event) {
         event.preventDefault();
 
-        window.location.href = "mailto:?subject=Project%20Dependency%20Status&body=" + buildMessageForExport();
+        var github_project = $('input[name="github-info"]').val();
+        var subject = encodeURIComponent("Project Dependency Status for " + github_project);
+        window.location.href = "mailto:?subject=" + subject + "&body=" + buildMessageForExport(github_project);
     });
 
-    function buildMessageForExport() {
-        var message = "Hello world!\n\nWe've found updates to the following libraries used in your project:\n\n";
+    function buildMessageForExport(project) {
+        var message = "Hello world!\n\nWe've found updates to the following libraries used in " + project + ":\n\n";
         $('.has-update-available').each( function() {
             var elem = $(this);
             message += elem.attr('data-artifact') + ": " +
                        elem.attr('data-version') + "--> " +
-                       elem.attr('data-new-version') + "\n" +
+                       elem.attr('data-new-version') + '\n"' +
                        elem.attr('data-group') + ":" +
                        elem.attr('data-artifact') + ":" +
                        elem.attr('data-new-version') + '"\n\n';
