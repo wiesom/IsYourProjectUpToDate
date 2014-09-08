@@ -19,10 +19,20 @@ function setupClipboard(element) {
 }
 
 function setupButtonsForExporting() {
+    var github_project = $('input[name="github-info"]').val();
+
+    $('#github-export').click(function(event) {
+        event.preventDefault();
+
+        var title = encodeURIComponent("Project Dependency Status");
+        var body = buildMessageForExport(github_project);
+        var url = 'https://github.com/' + github_project + '/issues/new?title=' + title + '&body=' + body;
+        window.open(url, '_blank');
+    });
+
     $('#email-export').click(function(event) {
         event.preventDefault();
 
-        var github_project = $('input[name="github-info"]').val();
         var subject = encodeURIComponent("Project Dependency Status for " + github_project);
         window.location.href = "mailto:?subject=" + subject + "&body=" + buildMessageForExport(github_project);
     });
