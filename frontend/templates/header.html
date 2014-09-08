@@ -1,0 +1,9 @@
+<header id="fancy-pants-header">
+    <a href="/" id="fancy-pants-title">IYPUTD</a>
+    <nav>
+        {% for page in pages %}
+        <li{% if page.selected %}{{ ' class="selected"' }}{% endif %}><a href="{{ page.url }}">{{ page.title }}</a></li>
+        {% endfor %}
+    </nav>
+    <div id="fancy-pants-header-indicator">&lt;menu&gt;</div>
+</header>

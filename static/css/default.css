@@ -4,6 +4,7 @@ body {
     font-size: 13px;
 
     background: #ECF0F1;
+    margin: 0;
 }
 
 h1, h2, h3, h4, h5 {
@@ -140,6 +141,76 @@ a:hover {
     text-decoration: none;
 }
 
+/* Header */
+#fancy-pants-header {
+    height: 32px;
+    box-sizing: border-box;
+    color: #CCC;
+    line-height: 32px;
+}
+
+#fancy-pants-header:hover {
+    background: rgba(33, 33, 33, 0.6);
+    color: #EEE;
+}
+
+#fancy-pants-header a {
+    color: #CCC;
+}
+
+#fancy-pants-header a:hover, #fancy-pants-header .selected a {
+    color: #EEE;
+}
+
+#fancy-pants-header-indicator {
+    width: 100%;
+    text-align: center;
+    color: #CCC;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#fancy-pants-header:hover #fancy-pants-header-indicator {
+    display: none;
+}
+
+#fancy-pants-title {
+    color: #CCC;
+    font-size: 1.3em;
+    float: left;
+    padding: 0 8px;
+    display: none;
+}
+
+#fancy-pants-header:hover #fancy-pants-title {
+    display: block;
+}
+
+#fancy-pants-title:hover {
+    text-decoration: none;
+    color: #EEE;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+#fancy-pants-header:hover nav {
+    display: block;
+}
+
+#fancy-pants-header nav {
+    display: none;
+    float: right;
+}
+
+#fancy-pants-header nav li {
+    display: inline-block;
+    list-style-type: none;
+    padding: 0 8px;
+}
+
+#fancy-pants-header nav li:hover, #fancy-pants-header nav li.selected {
+    background: rgba(255, 255, 255, 0.1);
+}
 
 /* Step 1 */
 form {

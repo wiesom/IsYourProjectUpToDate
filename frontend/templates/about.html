@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% load staticfiles %}
+        <title>Is your project up to date?</title>
+        <link rel="stylesheet" href="//normalize-css.googlecode.com/svn/trunk/normalize.css">
+        <link href='//fonts.googleapis.com/css?family=Roboto:300,700' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="{% static "css/default.css" %}">
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <style>
+            /* Yes, I'm too lazy to export this to a custom file */
+            body {
+                margin: 0;
+            }
+
+            #wrapper {
+                width: 700px;
+            }
+
+            p a {
+                text-decoration: underline;
+            }
+
+            p a:hover {
+                text-decoration: none;
+                color: #333;
+                background: rgba(51, 181, 229, 0.32);
+            }
+        </style>
+    </head>
+    <body>
+        {% include "header.html" %}
+        <div id="wrapper">
+            <h1>About the author</h1>
+            <p>
+                This project was created by <a href="{{ links.web }}">Karl Lindmark</a>.
+                If you're ever in need of contacting me, your best bet would probably be to try
+                <a href="{{ links.gplus }}">Google+</a> or
+                <a href="{{ links.twitter }}">Twitter</a>.
+                However, there's always the option of posting to
+                <a href="{{ links.facebook }}">the page on Facebook</a>, or just sending me
+                <a href="{{ links.email }}">one of those e-mail things</a> that hopefully doesn't get categorized as spam.
+            </p>
+            <h2>Sharing is caring!</h2>
+            <p>
+                Hope this page helps out when you need to know if your project is up to date, and feel free to
+                <a href="{{ links.github }}">join in on the fun on Github</a>
+                if you're up for it. The plan is basically to support as many different project types as possible, so if
+                you're familiar with how other frameworks/languages/utilities set-up their dependencies -
+                <a href="{{ links.new_issue }}">get in touch</a>. :-)
+            </p>
+        </div>
+    </body>
+</html>
