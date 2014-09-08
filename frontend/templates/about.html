@@ -19,20 +19,26 @@
             }
 
             p a {
-                text-decoration: underline;
+                text-decoration: none;
+                border-bottom: 1px solid #BBB;
             }
 
             p a:hover {
                 text-decoration: none;
                 color: #333;
                 background: rgba(51, 181, 229, 0.32);
+                border-bottom: 1px solid rgb(51, 181, 229);
             }
         </style>
     </head>
     <body>
         {% include "header.html" %}
         <div id="wrapper">
-            <h1>About the author</h1>
+            <h1>About the project</h1>
+            <p>
+                This is essentially a proof-of-concept of sorts, and a stepping stone into a bigger project. Enjoy the ride!
+            </p>
+            <h2>About the author</h2>
             <p>
                 This project was created by <a href="{{ links.web }}">Karl Lindmark</a>.
                 If you're ever in need of contacting me, your best bet would probably be to try

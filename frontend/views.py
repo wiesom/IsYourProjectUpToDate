@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from backend.views import PROJECT_FILES
 
+
 def main(request):
     project_types = PROJECT_FILES
     pages = _get_pages("home")
@@ -20,6 +21,7 @@ def about(request):
     pages = _get_pages("about")
     return render(request, 'about.html', locals())
 
+
 def _get_pages(page):
     return [{"title": "Home", "url": "/", "selected": page == "home"},
-            {"title": "About", "url": "/", "selected": page == "about"}]
+            {"title": "About the project", "url": "/about", "selected": page == "about"}]

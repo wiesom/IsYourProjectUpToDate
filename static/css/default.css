@@ -45,7 +45,6 @@ h5 {
     clear: both;
 }
 
-
 .subtle-table {
     margin-left: auto;
     margin-right: auto;
@@ -154,6 +153,11 @@ a:hover {
     color: #EEE;
 }
 
+#fancy-pants-header-inner {
+    width: 960px;
+    margin: 0 auto;
+}
+
 #fancy-pants-header a {
     color: #CCC;
 }
@@ -190,7 +194,7 @@ a:hover {
 #fancy-pants-title:hover {
     text-decoration: none;
     color: #EEE;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.15);
 }
 
 #fancy-pants-header:hover nav {
@@ -209,7 +213,7 @@ a:hover {
 }
 
 #fancy-pants-header nav li:hover, #fancy-pants-header nav li.selected {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.15);
 }
 
 /* Step 1 */
