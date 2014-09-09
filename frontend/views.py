@@ -5,7 +5,7 @@ from backend.views import PROJECT_FILES
 def main(request):
     project_types = PROJECT_FILES
     pages = _get_pages("home")
-    return render(request, 'index.html', locals())
+    return render(request, 'demo.html', locals())
 
 
 def about(request):
