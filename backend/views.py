@@ -90,7 +90,8 @@ def check_for_updates(request):
 
         latest_version = response['docs'][0]['latestVersion']
 
-        if version != '+' and LooseVersion(latest_version) > LooseVersion(version):
+        # FIXME (2014-09-10): We should handle attributes accordingly, but at the moment we'll just "ignore" it.
+        if version[0] == '$' or version != '+' and LooseVersion(latest_version) > LooseVersion(version):
             gav_string = group + ':' + artifact + ':' + latest_version
             return JsonHttpResponseBuilder("UPDATE_FOUND",
                                            str(latest_version),
