@@ -261,6 +261,10 @@ form {
     padding: 0;
 }
 
+#search-bar-and-button input[type="text"] {
+    float: left;
+}
+
 input[type="text"] {
     width: 500px;
     height: 24px;
