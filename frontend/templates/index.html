@@ -10,15 +10,6 @@
         <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
         <script src="{% static "js/ZeroClipboard.min.js" %}"></script>
         <script src="{% static "js/main.js" %}"></script>
-        <script>
-            $.ajaxSetup(
-                {
-                    beforeSend: function(xhr, settings) {
-                        xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
-                    }
-                }
-            );
-        </script>
     </head>
     <body>
         {% include "header.html" %}
@@ -30,6 +21,7 @@
                     <div class="status" style="margin-bottom: 16px"></div>
                     <fieldset id="search-bar-and-button">
                         <input tabindex="0" name="github-info" placeholder="Ex: karllindmark/FizzBuzz" value="karllindmark/FizzBuzz" type="text">
+                        {% csrf_token %}
                         <div class="attached-button-wrap">
                             <button tabindex="-1" class="attached-button"></button>
                         </div>
@@ -62,6 +54,7 @@
                         <tbody></tbody>
                     </table>
                     <div class="status" style="margin-top: 16px"></div>
+                    {% csrf_token %}
                     <input class="red-button" type="submit" value="Next" style="margin-top: 16px">
                 </form>
             </section>
@@ -69,6 +62,7 @@
                 <h1>Dependencies gathered!</h1>
                 <p>Hooray! We've managed to gather the dependencies for your project. Please report any bugs you may encounter (for example, missing items)!</p>
                 <div class="status"></div>
+                    {% csrf_token %}
                 <table id="project-deps-table" class="subtle-table">
                     <thead>
                         <tr>

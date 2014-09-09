@@ -142,7 +142,7 @@ function setupStep1() {
 
 function setupStep2() {
     $('#project-files-box').submit(
-        function() {
+        function(event) {
             event.preventDefault();
 
             var form = $(this);
@@ -151,7 +151,7 @@ function setupStep2() {
             }
 
             var status_box = form.find('.status');
-            var selected_files = form.find("input[type='checkbox']:checked");
+            var selected_files = form.find('input[type="checkbox"]:checked');
             var project_type = $('select[name="project-type"]').val();
 
             if (selected_files.length == 0) {
@@ -224,10 +224,10 @@ function setupStep2() {
 function setupStep3() {
     setupButtonsForExporting();
 
-
     var container = $('#step-3');
     var status_box = container.find('.status');
-    var project_type = $('select[name="project-type').val();
+    var project_type = $('select[name="project-type"]').val();
+    var token = container.find('input[name="csrfmiddlewaretoken"]').val();
 
     container.find('#project-deps-table').find('tbody tr').each(
         function () {
@@ -242,7 +242,8 @@ function setupStep3() {
                 'group': group,
                 'artifact': artifact,
                 'version': version,
-                'project-type': project_type
+                'project-type': project_type,
+                'csrfmiddlewaretoken': token
             };
 
             $.ajax(
