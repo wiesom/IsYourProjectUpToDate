@@ -17,7 +17,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "DEBUG")
 DEBUG = 'true' if SECRET_KEY == "DEBUG" else 'false'
 TEMPLATE_DEBUG = DEBUG
 
-ALLOWED_HOSTS = ['iyputd.ninetwozero.com']
+ALLOWED_HOSTS = ['isyourprojectuptodate.com', 'iyputd.com', 'iyputd.ninetwozero.com']
 
 
 # Application definition
@@ -68,12 +68,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
-STATIC_ROOT = "/var/www/html/IsYourProjectUpToDate/"
+STATIC_ROOT = "/var/www/public/iyputd.com/public/IsYourProjectUpToDate"
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
-    '/var/www/static/',
+    '/var/www/public/iyputd.com/public/IsYourProjectUpToDate/static/',
 )
 
 # LOGGING
