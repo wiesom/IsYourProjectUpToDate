@@ -1,28 +1,19 @@
-var GITHUB_URL_REGEX = /(?:(?:http(?:s)?:\/\/(?:www\.)?)?github\.com\/)?([a-z0-9-]+\/[a-z0-9_.-]+)$/i;
-            
-$(document).ready(
-    function() {
-        $('.attached-button-wrap').click(
-            function() {
-                $(this).children('.attached-button')[0].click();
-            }
-        );
-        setupStep1();
-    }
-);
+/*jslint browser: true*/
+/*global $, jQuery, ZeroClipboard, alert*/
+
+var GITHUB_URL_REGEX = /(?:(?:http(?:s)?:\/\/(?:www\.)?)?github\.com\/)?([a-z0-9\-]+\/[a-z0-9_.\-]+)$/i;
 
 function setupClipboard(element) {
     var client = new ZeroClipboard(element, { moviePath: "ZeroClipboard.swf", debug: false });
-    client.on( "load", function(client) {
-        client.on( "complete", function(client, args) {
+    client.on("load", function(client) {
+        client.on("complete", function(client, args) {
             client.setText(args.text);
         });
     });
 }
 
 function setupButtonsForExporting() {
-    var github_info = $('input[name="github-info"]').val();
-    var github_project = GITHUB_URL_REGEX.exec(github_info)[1];
+    var github_project = GITHUB_URL_REGEX.exec($('input[name="github-info"]').val())[1];
 
     $('#github-export').click(function(event) {
         event.preventDefault();
@@ -57,7 +48,7 @@ function setupButtonsForExporting() {
 }
 
 function showError(element, text) {
-    element.html(text).addClass('error').removeClass('neutral').show()
+    element.html(text).addClass('error').removeClass('neutral').show();
 }
 
 function showProgress(element, text) {
@@ -84,8 +75,7 @@ function setupStep1() {
             var token = form.find('input[name="csrfmiddlewaretoken"]').val();
 
             var regex_matches = GITHUB_URL_REGEX.exec(github_info.val());
-            console.log(regex_matches);
-            if (github_info.length == 0 || regex_matches == null || project_type == undefined) {
+            if (github_info.length === 0 || regex_matches === null || project_type === undefined) {
                 showError(status_box, 'Invalid format, expected one of the following:<br><br>' +
                                       'Username/Repository<br>' +
                                       'https://www.github.com/Username/Repository<br><br>' +
@@ -113,8 +103,8 @@ function setupStep1() {
                         container.find("tbody").remove();
                         status_box.text("").hide();
 
-                        if (data['status'] != 'SUCCESS') {
-                            showError(status_box, data['message']);
+                        if (data.status !== 'SUCCESS') {
+                            showError(status_box, data.message);
                             form.removeAttr("running");
                             return;
                         }
@@ -124,10 +114,10 @@ function setupStep1() {
                                 var new_element = $(
                                     '<tr>' +
                                     '    <td class="col-80">' +
-                                    '        <a href="' + item['html_url'] + '" target="_blank">' + item['path'] + '</a>' +
+                                    '        <a href="' + item.html_url + '" target="_blank">' + item.path + '</a>' +
                                     '    </td>' +
                                     '    <td class="col-20">' +
-                                    '        <input name="selected" type="checkbox" checked value="' + item['html_url'] + '">' +
+                                    '        <input name="selected" type="checkbox" checked value="' + item.html_url + '">' +
                                     '    </td>' +
                                     '</tr>'
                                 );
@@ -168,10 +158,12 @@ function setupStep2() {
             var selected_files = form.find('input[type="checkbox"]:checked');
             var project_type = $('select[name="project-type"]').val();
 
-            if (selected_files.length == 0) {
+            if (selected_files.length === 0) {
                 showError(status_box, "No files selected. You'll need to select at least one of the above.");
                 return;
-            } else if (project_type == undefined) {
+            }
+
+            if (project_type === undefined) {
                 showError(status_box, "No project type selected.");
                 return;
             }
@@ -182,28 +174,28 @@ function setupStep2() {
                 {
                     type: "POST",
                     dataType: 'json',
-                    url:'/api/find-dependencies/',
+                    url: '/api/find-dependencies/',
                     data: form.serialize() + "&project-type=" + encodeURIComponent(project_type),
                     success: function (data) {
                         var container = $('#project-deps-table');
                         container.find("tbody").remove();
                         status_box.text("").hide();
 
-                        if (data['status'] != 'SUCCESS') {
-                            showError(status_box, data['message']);
+                        if (data.status !== 'SUCCESS') {
+                            showError(status_box, data.message);
                             form.removeAttr("running");
                             return;
                         }
 
-                        $(data['dependencies']).each(
+                        $(data.dependencies).each(
                             function(index, item) {
-                                var element_id = "progress-" + item['a'].replace(/\./g, "_");
+                                var element_id = "progress-" + item.a.replace(/\./g, "_");
                                 var new_element = $(
-                                    '<tr data-group="' + item['g']+ '" data-artifact="' + item['a'] + '" data-version="' + item['v'] + '">' +
+                                    '<tr data-group="' + item.g + '" data-artifact="' + item.a + '" data-version="' + item.v + '">' +
                                     '    <td class="col-60">' +
-                                    '        <span>' + item['a'] + '</span>' +
-                                    '        <span class="dependency-meta">' + item['g'] +'</span>' +
-                                    '        <span class="dependency-meta">' + item['v'] + '</span>' +
+                                    '        <span>' + item.a + '</span>' +
+                                    '        <span class="dependency-meta">' + item.g + '</span>' +
+                                    '        <span class="dependency-meta">' + item.v + '</span>' +
                                     '    </td>' +
                                     '    <td class="col-20" style="white-space: pre" id="' + element_id + '">' +
                                     '        Checking...' +
@@ -267,14 +259,14 @@ function setupStep3() {
                     url: '/api/check-for-updates/',
                     data: postdata,
                     success: function (data) {
-                        if (data['status'] == 'UPDATE_FOUND') {
+                        if (data.status === 'UPDATE_FOUND') {
                             this_elem.addClass("has-update-available");
                             this_elem.attr("data-new-version", data['new_version']);
-                            status_elem.html(data['message'] + '<span class="dependency-meta">Update available</span>');
-                        } else if (data['status'] == 'UP-TO-DATE') {
-                            status_elem.html(data['message'] + '<span class="dependency-meta">Up to date</span>');
+                            status_elem.html(data.message + '<span class="dependency-meta">Update available</span>');
+                        } else if (data.status === 'UP-TO-DATE') {
+                            status_elem.html(data.message + '<span class="dependency-meta">Up to date</span>');
                         } else {
-                            status_elem.html(data['message'] + '<span class="dependency-meta">:-(</span>');
+                            status_elem.html(data.message + '<span class="dependency-meta">:-(</span>');
                         }
 
                         button.attr('data-clipboard-text', data['gav_string']);
@@ -288,3 +280,14 @@ function setupStep3() {
         }
     );
 }
+
+$(document).ready(
+    function() {
+        $('.attached-button-wrap').click(
+            function() {
+                $(this).children('.attached-button')[0].click();
+            }
+        );
+        setupStep1();
+    }
+);
