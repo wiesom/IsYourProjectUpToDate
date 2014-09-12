@@ -41,9 +41,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'UpToDate.urls'
+ROOT_URLCONF = 'IsYourProjectUpToDate.urls'
 
-WSGI_APPLICATION = 'UpToDate.wsgi.application'
+WSGI_APPLICATION = 'IsYourProjectUpToDate.wsgi.application'
 
 
 # Database
@@ -68,7 +68,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
-STATIC_ROOT = "/var/www/html/UpToDate/"
+STATIC_ROOT = "/var/www/html/IsYourProjectUpToDate/"
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
@@ -102,12 +102,12 @@ LOGGING = {
 }
 
 CONFIG = {
-    'working_dir': '/var/www/public/iyputd.com/public/UpToDate',
+    'working_dir': '/var/www/public/iyputd.com/public/IsYourProjectUpToDate',
     'args': (
         '--bind=127.0.0.1:8000',
         '--workers=5',
         '--timeout=60',
-        'UpToDate.UpToDate',
+        'IsYourProjectUpToDate.IsYourProjectUpToDate',
     ),
 }
 
