@@ -19,7 +19,7 @@ function setupButtonsForExporting() {
         event.preventDefault();
 
         var title = encodeURIComponent("Project Dependency Status");
-        var body = buildMessageForExport(github_project);
+        var body = buildMessageForExport(github_project, true);
         var url = 'https://github.com/' + github_project + '/issues/new?title=' + title + '&body=' + body;
         window.open(url, '_blank');
     });
@@ -28,11 +28,13 @@ function setupButtonsForExporting() {
         event.preventDefault();
 
         var subject = encodeURIComponent("Project Dependency Status for " + github_project);
-        window.location.href = "mailto:?subject=" + subject + "&body=" + buildMessageForExport(github_project);
+        window.location.href = "mailto:?subject=" + subject + "&body=" + buildMessageForExport(github_project, false);
     });
 
-    function buildMessageForExport(project) {
-        var message = "Hello world!\n\nWe've found updates to the following libraries used in " + project + ":\n\n";
+    function buildMessageForExport(project, is_markdown) {
+        var message = is_markdown ? "# " : "";
+        message += "Hello world!\n\nWe've found updates to the following dependencies used in " + project + ":\n\n";
+
         $('.has-update-available').each( function() {
             var elem = $(this);
             message += elem.attr('data-artifact') + ": " +
@@ -42,7 +44,8 @@ function setupButtonsForExporting() {
                        elem.attr('data-artifact') + ":" +
                        elem.attr('data-new-version') + '"\n\n';
         });
-        message += "# This list was generated via " + document.URL;
+
+        message += "*This list was generated via " + document.URL + "*";
         return encodeURIComponent(message);
     }
 }
