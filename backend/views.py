@@ -16,7 +16,7 @@ def find_project_files(request):
     project_type = request.POST.get('project-type')
     project = PROJECT_FILES.get(project_type)
 
-    if not github_info or not project_type:
+    if not github_info or not project:
         return JsonHttpResponseBuilder("ERROR", "Oops, something bad happened.").build()
     elif not project:
         return JsonHttpResponseBuilder("ERROR", "Unsupported project type: " + project_type).build()

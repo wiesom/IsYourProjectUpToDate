@@ -1,3 +1,5 @@
+var GITHUB_URL_REGEX = /(?:(?:http(?:s)?:\/\/(?:www\.)?)?github\.com\/)?([a-z0-9-]+\/[a-z0-9_.-]+)$/i;
+            
 $(document).ready(
     function() {
         $('.attached-button-wrap').click(
@@ -19,7 +21,8 @@ function setupClipboard(element) {
 }
 
 function setupButtonsForExporting() {
-    var github_project = $('input[name="github-info"]').val();
+    var github_info = $('input[name="github-info"]').val();
+    var github_project = GITHUB_URL_REGEX.exec(github_info)[1];
 
     $('#github-export').click(function(event) {
         event.preventDefault();
@@ -54,11 +57,11 @@ function setupButtonsForExporting() {
 }
 
 function showError(element, text) {
-    element.text(text).addClass('error').removeClass('neutral').show()
+    element.html(text).addClass('error').removeClass('neutral').show()
 }
 
 function showProgress(element, text) {
-    element.text(text).addClass('neutral').removeClass('error').show();
+    element.html(text).addClass('neutral').removeClass('error').show();
 }
 
 function setupStep1() {
@@ -77,23 +80,34 @@ function setupStep1() {
 
             var status_box = form.find('.status');
             var github_info = form.find("input[name='github-info']");
-            var validation_regex = /([a-z0-9-]+)\/([a-z0-9_.-]+)/ig;
+            var project_type = form.find("select[name='project-type']").val();
+            var token = form.find('input[name="csrfmiddlewaretoken"]').val();
 
-            if (github_info.length == 0 || validation_regex.exec(github_info.val()) == null) {
-                showError(status_box, 'Expected format: username/repo. ' +
-                                      'Valid characters are alphanumerics, dashes and punctuations.');
+            var regex_matches = GITHUB_URL_REGEX.exec(github_info.val());
+            console.log(regex_matches);
+            if (github_info.length == 0 || regex_matches == null || project_type == undefined) {
+                showError(status_box, 'Invalid format, expected one of the following:<br><br>' +
+                                      'Username/Repository<br>' +
+                                      'https://www.github.com/Username/Repository<br><br>' +
+                                      'Valid username/repository characters are alphanumerics, dashes and punctuations.');
                 return;
             }
 
             form.attr("running", true);
             showProgress(status_box, 'Searching for ' + github_info.val() + ' on Github...');
 
+            var postData = {
+                "github-info": regex_matches[1],
+                "project-type": project_type,
+                "csrfmiddlewaretoken": token
+            };
+
             $.ajax(
                 {
                     type: "POST",
                     dataType: 'json',
                     url:'/api/find-project-files/',
-                    data: form.serialize(),
+                    data: postData,
                     success: function (data) {
                         var container = $('#project-files-table');
                         container.find("tbody").remove();
