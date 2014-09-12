@@ -123,7 +123,6 @@ a:hover {
     border-radius: 2px;
     box-sizing: border-box;
     text-decoration: none;
-    outline: none;
 
 
     box-shadow: 0 0 4px #FF4444;
@@ -138,6 +137,10 @@ a:hover {
     border: 1px solid #f05656;
     cursor: pointer;
     text-decoration: none;
+}
+
+.red-button:focus {
+    outline: none;
 }
 
 /* Header */
