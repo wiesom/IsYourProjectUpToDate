@@ -38,7 +38,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'frontend',
-    'django.contrib.admin',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -117,11 +116,11 @@ LOGGING = {
 
 CONFIG = {
     # 'mode': 'wsgi',
-    'working_dir': '/var/www/public/iyputd.com/public',
+    'working_dir': '/var/www/public/iyputd.com/public/UpToDate',
     # 'python': '/usr/bin/python',
     'args': (
-        # '--bind=127.0.0.1:8000',
-        '--workers=16',
+        '--bind=127.0.0.1:8000',
+        '--workers=5',
         '--timeout=60',
         'UpToDate.UpToDate',
     ),
