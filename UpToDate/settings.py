@@ -14,7 +14,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 PROJECT_ROOT = os.path.normpath(os.path.dirname(__file__)+'/..')
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "DEBUG")
-DEBUG = SECRET_KEY == "DEBUG"
+DEBUG = 'true' if SECRET_KEY == "DEBUG" else 'false'
 TEMPLATE_DEBUG = DEBUG
 
 ALLOWED_HOSTS = ['iyputd.ninetwozero.com']
@@ -111,5 +111,5 @@ CONFIG = {
     ),
 }
 
-ADMINS = ["support@ninetwozero.com"]
-MANAGERS = ["support@ninetwozero.com"]
+#ADMINS = ["support@ninetwozero.com"]
+#MANAGERS = ["support@ninetwozero.com"]
