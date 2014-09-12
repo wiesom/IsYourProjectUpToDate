@@ -110,3 +110,6 @@ CONFIG = {
         'UpToDate.UpToDate',
     ),
 }
+
+ADMINS = ["support@ninetwozero.com"]
+MANAGERS = ["support@ninetwozero.com"]
