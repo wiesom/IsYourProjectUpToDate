@@ -33,16 +33,31 @@ function setupButtonsForExporting() {
 
     function buildMessageForExport(project, is_markdown) {
         var message = is_markdown ? "# " : "";
-        message += "Hello world!\n\nWe've found updates to the following dependencies used in " + project + ":\n\n";
+        message += "Hello world!\n\nWe've found updates to the following dependencies used in " +
+                   (is_markdown? "**" : "") + project +
+                   (is_markdown? "**" : "") + ":\n\n";
+
+        var latest_path = '';
 
         $('.has-update-available').each( function() {
             var elem = $(this);
-            message += elem.attr('data-artifact') + ": " +
+
+            if (elem.attr('data-path') !== latest_path) {
+                latest_path = elem.attr('data-path');
+
+                message += "File: " + latest_path + "\n\n";
+            }
+
+            message += (is_markdown? "**" : "    ") +
+                       elem.attr('data-artifact') +
+                       (is_markdown? "**" : "") + " " +
                        elem.attr('data-version') + "--> " +
-                       elem.attr('data-new-version') + '\n"' +
+                       elem.attr('data-new-version') + '\n' +
+                       (is_markdown? "`" : "    ") + '"' +
                        elem.attr('data-group') + ":" +
                        elem.attr('data-artifact') + ":" +
-                       elem.attr('data-new-version') + '"\n\n';
+                       elem.attr('data-new-version') + '"' +
+                       (is_markdown? "`" : "") + '\n\n\n';
         });
 
         message += "*This list was generated via " + document.URL + "*";
@@ -211,7 +226,7 @@ function setupStep2() {
                             '        </tr>' +
                             '    </thead>' +
                             '</table>');
-                            
+
                             var footer = $(
                             '<tfoot>' +
                             '    <tr>' +
@@ -224,7 +239,12 @@ function setupStep2() {
                             $(file.dependencies).each(function(dep_index, dep) {
                                 var element_id = "progress-" + dep.a.replace(/\./g, "_");
                                 var table_row = $(
-                                    '<tr class="data-row" data-group="' + dep.g + '" data-artifact="' + dep.a + '" data-version="' + dep.v + '">' +
+                                    '<tr class="data-row"' +
+                                    '    data-path="' + file.path + '"' +
+                                    '    data-group="' + dep.g + '" ' +
+                                    '    data-artifact="' + dep.a + '" ' +
+                                    '    data-version="' + dep.v + '"' +
+                                    '>' +
                                     '    <td class="col-60">' +
                                     '        <span>' + dep.a + '</span>' +
                                     '        <span class="dependency-meta">' + dep.g + '</span>' +

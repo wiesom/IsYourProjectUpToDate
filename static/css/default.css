@@ -354,12 +354,12 @@ input[type="text"] {
 }
 
 .project-deps tfoot th a {
-    color: #333;
+    color: #666;
     border-bottom: 1px solid #666;
 }
 
 .project-deps tfoot th a:hover {
-    color: #999;
+    color: #AAA;
     text-decoration: none;
     border: 0;
 }
