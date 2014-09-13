@@ -20,9 +20,9 @@
                 <form method="post" id="search-box">
                     <div class="status" style="margin-bottom: 16px"></div>
                     <fieldset id="search-bar-and-button">
-                        <input tabindex="0" name="github-info" placeholder="Ex: karllindmark/FizzBuzz" type="text">
+                        <input tabindex="2" name="github-info" placeholder="Ex: karllindmark/FizzBuzz" type="text">
                         {% csrf_token %}
-                        <div class="attached-button-wrap">
+                        <div class="attached-button-wrap pseudo-button" tabindex="2">
                             <button tabindex="-1" class="attached-button"></button>
                         </div>
                     </fieldset>
@@ -63,15 +63,7 @@
                 <p>Hooray! We've managed to gather the dependencies for your project. Please report any bugs you may encounter (for example, missing items)!</p>
                 <div class="status"></div>
                     {% csrf_token %}
-                <table id="project-deps-table" class="subtle-table">
-                    <thead>
-                        <tr>
-                            <th class="col-60">Title</th>
-                            <th class="col-20">Latest version</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
+                <div id="project-deps-table-wrapper"></div>
                 <div id="export-controllers">
                     <a id="github-export" class="red-button">Export to Github...</a>
                     <a id="email-export" class="red-button">Export to email...</a>

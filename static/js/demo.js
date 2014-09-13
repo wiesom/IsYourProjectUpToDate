@@ -63,6 +63,12 @@ function setupStep1() {
         $('#' + $(this).attr('data-target')).slideToggle(400);
     });
 
+    $('.pseudo-button').keydown(function(number) {
+        if (number.keyCode === 13) {
+            $(this).closest('form').submit();
+        }
+    });
+
     $('#search-box').submit(
         function(event) {
             event.preventDefault();
@@ -87,7 +93,7 @@ function setupStep1() {
             }
 
             form.attr("running", true);
-            showProgress(status_box, 'Searching for ' + github_info.val() + ' on Github...');
+            showProgress(status_box, 'Searching for ' + regex_matches[1] + ' on Github...');
 
             var postData = {
                 "github-info": regex_matches[1],
@@ -114,13 +120,14 @@ function setupStep1() {
 
                         $(data['files']).each(
                             function(index, item) {
+                                var value = item.html_url + '|' + item.path;
                                 var new_element = $(
-                                    '<tr>' +
+                                    '<tr class="data-row">' +
                                     '    <td class="col-80">' +
                                     '        <a href="' + item.html_url + '" target="_blank">' + item.path + '</a>' +
                                     '    </td>' +
                                     '    <td class="col-20">' +
-                                    '        <input name="selected" type="checkbox" checked value="' + item.html_url + '">' +
+                                    '        <input name="selected" type="checkbox" checked value="' + value + '">' +
                                     '    </td>' +
                                     '</tr>'
                                 );
@@ -180,8 +187,8 @@ function setupStep2() {
                     url: '/api/find-dependencies/',
                     data: form.serialize() + "&project-type=" + encodeURIComponent(project_type),
                     success: function (data) {
-                        var container = $('#project-deps-table');
-                        container.find("tbody").remove();
+                        var container = $('#project-deps-table-wrapper');
+                        container.find("table").remove();
                         status_box.text("").hide();
 
                         if (data.status !== 'SUCCESS') {
@@ -190,15 +197,38 @@ function setupStep2() {
                             return;
                         }
 
-                        $(data.dependencies).each(
-                            function(index, item) {
-                                var element_id = "progress-" + item.a.replace(/\./g, "_");
-                                var new_element = $(
-                                    '<tr data-group="' + item.g + '" data-artifact="' + item.a + '" data-version="' + item.v + '">' +
+                        $(data.results).each(function(index, file) {
+                            if (file.dependencies.length === 0) {
+                                return true;
+                            }
+
+                            var table = $(
+                            '<table class="project-deps subtle-table">' +
+                            '    <thead>' +
+                            '        <tr>' +
+                            '          <th class="col-60">Title</th>' +
+                            '          <th class="col-20">Latest version</th>' +
+                            '        </tr>' +
+                            '    </thead>' +
+                            '</table>');
+                            
+                            var footer = $(
+                            '<tfoot>' +
+                            '    <tr>' +
+                            '        <th colspan="3" style="text-align: left">' +
+                            '            File: <a href="' + file.url + '">' + file.path + '</a>' +
+                            '        </th>' +
+                            '    </tr>' +
+                            '</tfoot>');
+
+                            $(file.dependencies).each(function(dep_index, dep) {
+                                var element_id = "progress-" + dep.a.replace(/\./g, "_");
+                                var table_row = $(
+                                    '<tr class="data-row" data-group="' + dep.g + '" data-artifact="' + dep.a + '" data-version="' + dep.v + '">' +
                                     '    <td class="col-60">' +
-                                    '        <span>' + item.a + '</span>' +
-                                    '        <span class="dependency-meta">' + item.g + '</span>' +
-                                    '        <span class="dependency-meta">' + item.v + '</span>' +
+                                    '        <span>' + dep.a + '</span>' +
+                                    '        <span class="dependency-meta">' + dep.g + '</span>' +
+                                    '        <span class="dependency-meta">' + dep.v + '</span>' +
                                     '    </td>' +
                                     '    <td class="col-20" style="white-space: pre" id="' + element_id + '">' +
                                     '        Checking...' +
@@ -206,11 +236,13 @@ function setupStep2() {
                                     '    <td class="col-20">' +
                                     '       <a href="#" class="red-button clipboard-button"">Copy to clipboard</a>' +
                                     '    </td>' +
-                                    '</tr>'
+                                    '</tr></tbody>'
                                 );
-                                container.append(new_element)
-                            }
-                        );
+                                table.append(table_row);
+                            });
+                            table.append(footer);
+                            container.append(table);
+                        });
 
                         // Last but not least
                         $('#step-2').fadeOut(
@@ -238,7 +270,7 @@ function setupStep3() {
     var project_type = $('select[name="project-type"]').val();
     var token = container.find('input[name="csrfmiddlewaretoken"]').val();
 
-    container.find('#project-deps-table').find('tbody tr').each(
+    container.find('#project-deps-table-wrapper').find('tbody tr.data-row').each(
         function () {
             var this_elem = $(this);
             var group = this_elem.attr('data-group');

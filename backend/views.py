@@ -40,6 +40,7 @@ def find_project_files(request):
     else:
         return JsonHttpResponseBuilder("ERROR", "No valid project files found.").build()
 
+
 def find_dependencies(request):
     selected_files = request.POST.getlist('selected')
     project_type = request.POST.get('project-type')
@@ -49,18 +50,23 @@ def find_dependencies(request):
     elif not project_type:
         return JsonHttpResponseBuilder("ERROR", "No project type selected.").build()
 
-    dependencies = []
+    file_results = []
     for selected_file in selected_files:
+        url, path = selected_file.split("|")
         try:
-            response = requests.get(selected_file.replace("/blob/", "/raw/"))
+            response = requests.get(url.replace("/blob/", "/raw/"))
         except (ProtocolError, ConnectTimeoutError, ConnectionError):
             return JsonHttpResponseBuilder("ERROR",
                                            "Request failed while fetching the project files. " +
                                            "Please try again later.").build()
-        dependencies.extend(ProjectFileBuilder.create(project_type, selected_file, response).extract())
+        file_results.append({
+            'path': path,
+            'url': url,
+            'dependencies': ProjectFileBuilder.create(project_type, selected_file, response).extract()
+        })
 
-    if dependencies:
-        return JsonHttpResponseBuilder("SUCCESS", "Dependencies found.", {"dependencies": dependencies}).build()
+    if file_results:
+        return JsonHttpResponseBuilder("SUCCESS", "Dependencies found.", {"results": file_results}).build()
     else:
         return JsonHttpResponseBuilder("NO_DEPENDENCIES", "No project files found.").build()
 
