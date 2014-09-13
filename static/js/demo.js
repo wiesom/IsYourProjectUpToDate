@@ -336,13 +336,26 @@ function setupStep3() {
     );
 }
 
-$(document).ready(
-    function() {
-        $('.attached-button-wrap').click(
-            function() {
-                $(this).children('.attached-button')[0].click();
-            }
-        );
-        setupStep1();
-    }
-);
+$(document).ready(function() {
+    $('.attached-button-wrap').click(function() {
+        $(this).children('.attached-button')[0].click();
+    });
+
+    $('.file-toggler').click(function() {
+        var checkbox = $(this);
+        checkbox.closest('table').find('.data-row input[type="checkbox"]').prop('checked', checkbox.is(":checked"));
+    });
+
+    $('#project-files-table').on('click', '.data-row input[type="checkbox"]', function() {
+        var checkbox = $(this);
+        var toggler = checkbox.closest('table').find('.file-toggler');
+
+        if ($('.data-row input[type="checkbox"]').size() == $('.data-row input[type="checkbox"]:checked').size()) {
+            toggler.prop('checked', checkbox.is(':checked'));
+        } else {
+            toggler.prop('checked', false);
+        }
+    });
+
+    setupStep1();
+});
