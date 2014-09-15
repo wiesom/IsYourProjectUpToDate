@@ -1,7 +1,8 @@
 /*jslint browser: true*/
 /*global $, jQuery, ZeroClipboard, alert*/
 
-var GITHUB_URL_REGEX = /(?:(?:http(?:s)?:\/\/(?:www\.)?)?github\.com\/)?([a-z0-9\-]+\/[a-z0-9_.\-]+)$/i;
+var GITHUB_URL_REGEX = /^(?:(?:http(?:s)?:\/\/)?(?:www\.)?)github\.com\//i;
+var USER_REPO_REGEX = /^[a-z0-9\-]+\/[a-z0-9_.\-]+$/i;
 
 function setupClipboard(element) {
     var client = new ZeroClipboard(element, { moviePath: "ZeroClipboard.swf", debug: false });
@@ -95,23 +96,51 @@ function setupStep1() {
 
             var status_box = form.find('.status');
             var github_info = form.find("input[name='github-info']");
+            var github_info_value = github_info.val();
             var project_type = form.find("select[name='project-type']").val();
             var token = form.find('input[name="csrfmiddlewaretoken"]').val();
 
-            var regex_matches = GITHUB_URL_REGEX.exec(github_info.val());
-            if (github_info.length === 0 || regex_matches === null || project_type === undefined) {
-                showError(status_box, 'Invalid format, expected one of the following:<br><br>' +
-                                      'Username/Repository<br>' +
-                                      'https://www.github.com/Username/Repository<br><br>' +
+            /*Check for impossible errors*/
+            if (project_type === undefined){
+                showError(status_box, "An impossible error has just occurred, so something is seriously broken<br>");
+                return;
+            }
+
+            /* Check for emtpty search field */
+            if (github_info_value.length === 0){
+                showProgress(status_box, 'Dude, you have to put something in the search field!<br>');
+                return;
+            }
+
+            /* Strip away the github url from the search string*/
+            if(GITHUB_URL_REGEX.exec(github_info_value)){
+                github_info_value = github_info_value.replace(GITHUB_URL_REGEX, "");
+            }
+
+            /* Search for invalid characters*/
+            else if (! /^[\w\/\.-]+$/.exec(github_info_value)){
+                showError(status_box, 'Invalid characters: <br>' +
                                       'Valid username/repository characters are alphanumerics, dashes and punctuations.');
                 return;
             }
 
+            if (! USER_REPO_REGEX.exec(github_info_value) ){
+                showError(status_box, 'Invalid format, expected one of the following:<br><br>' +
+                                      '- &lt;username&gt;/&lt;repository&gt;<br>' +
+                                      '- [[http[s]://]www.github.com/]&lt;username&gt;/&lt;repository&gt;<br><br>' +
+                                      'Valid username/repository characters are alphanumerics, dashes and punctuations.');
+                return;
+            }
+
+            var github_username = github_info_value.split("/")[0];
+            var github_repository = github_info_value.split("/")[1];
+
             form.attr("running", true);
-            showProgress(status_box, 'Searching for ' + regex_matches[1] + ' on Github...');
+            //TODO: Use GitHub api to verify the username and repository name
+            showProgress(status_box, 'Searching for ' + github_username + '/' + github_repository + ' on Github...');
 
             var postData = {
-                "github-info": regex_matches[1],
+                "github-info": github_username + '/' + github_repository,
                 "project-type": project_type,
                 "csrfmiddlewaretoken": token
             };
