@@ -3,6 +3,7 @@
 
 var GITHUB_URL_REGEX = /^(?:(?:http(?:s)?:\/\/)?(?:www\.)?)github\.com\//i;
 var USER_REPO_REGEX = /^[a-z0-9\-]+\/[a-z0-9_.\-]+$/i;
+var VALID_LETTERS_REGEX = /^[\w\/\.-]+$/;
 
 function setupClipboard(element) {
     var client = new ZeroClipboard(element, { moviePath: "ZeroClipboard.swf", debug: false });
@@ -118,7 +119,7 @@ function setupStep1() {
             }
 
             /* Search for invalid characters*/
-            else if (! /^[\w\/\.-]+$/.exec(github_info_value)){
+            else if (! VALID_LETTERS_REGEX.exec(github_info_value)){
                 showError(status_box, 'Invalid characters: <br>' +
                                       'Valid username/repository characters are alphanumerics, dashes and punctuations.');
                 return;
