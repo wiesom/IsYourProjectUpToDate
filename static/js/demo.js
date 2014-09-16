@@ -2,8 +2,8 @@
 /*global $, jQuery, ZeroClipboard, alert*/
 
 var GITHUB_URL_REGEX = /^(?:(?:http(?:s)?:\/\/)?(?:www\.)?)github\.com\//i;
-var USER_REPO_REGEX = /^[a-z0-9\-]+\/[a-z0-9_.\-]+$/i;
-var VALID_LETTERS_REGEX = /^[\w\/\.-]+$/;
+var USER_REPO_REGEX = /^([a-z0-9\-]+)\/([a-z0-9_.\-]+)$/i;
+var INVALID_LETTERS_REGEX = /[^\w\/\.-]/g;
 
 function setupClipboard(element) {
     var client = new ZeroClipboard(element, { moviePath: "ZeroClipboard.swf", debug: false });
@@ -114,18 +114,19 @@ function setupStep1() {
             }
 
             /* Strip away the github url from the search string*/
-            if(GITHUB_URL_REGEX.exec(github_info_value)){
-                github_info_value = github_info_value.replace(GITHUB_URL_REGEX, "");
-            }
+            github_info_value = github_info_value.replace(GITHUB_URL_REGEX, "");
 
             /* Search for invalid characters*/
-            else if (! VALID_LETTERS_REGEX.exec(github_info_value)){
-                showError(status_box, 'Invalid characters: <br>' +
+            var found_invalid_letters = github_info_value.match(INVALID_LETTERS_REGEX);
+            if ( found_invalid_letters != null && found_invalid_letters.length > 0 ){
+                showError(status_box, 'Invalid characters: '+ found_invalid_letters.join(" ") + ' <br>' +
                                       'Valid username/repository characters are alphanumerics, dashes and punctuations.');
                 return;
             }
 
-            if (! USER_REPO_REGEX.exec(github_info_value) ){
+            /* Check that we have a username and a repo name separated by a "/" */
+            var user_repo_match = USER_REPO_REGEX.exec(github_info_value);
+            if ( user_repo_match === null ){
                 showError(status_box, 'Invalid format, expected one of the following:<br><br>' +
                                       '- &lt;username&gt;/&lt;repository&gt;<br>' +
                                       '- [[http[s]://]www.github.com/]&lt;username&gt;/&lt;repository&gt;<br><br>' +
@@ -133,8 +134,8 @@ function setupStep1() {
                 return;
             }
 
-            var github_username = github_info_value.split("/")[0];
-            var github_repository = github_info_value.split("/")[1];
+            var github_username = user_repo_match[1];
+            var github_repository = user_repo_match[2];
 
             form.attr("running", true);
             //TODO: Use GitHub api to verify the username and repository name
