@@ -59,14 +59,17 @@ def find_dependencies(request):
             return JsonHttpResponseBuilder("ERROR",
                                            "Request failed while fetching the project files. " +
                                            "Please try again later.").build()
-        file_results.append({
-            'path': path,
-            'url': url,
-            'dependencies': ProjectFileBuilder.create(project_type, selected_file, response).extract()
-        })
+
+        dependencies = ProjectFileBuilder.create(project_type, selected_file, response).extract()
+        if dependencies:
+            file_results.append({
+                'path': path,
+                'url': url,
+                'dependencies': dependencies
+            })
 
     if file_results:
-        return JsonHttpResponseBuilder("SUCCESS", "Dependencies found.", {"results": file_results}).build()
+        return JsonHttpResponseBuilder("SUCCESS", "Dependencies found.", {"files": file_results}).build()
     else:
         return JsonHttpResponseBuilder("NO_DEPENDENCIES", "No project files found.").build()
 
