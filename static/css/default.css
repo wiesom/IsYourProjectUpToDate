@@ -98,6 +98,11 @@ a:hover {
     background: rgba(51, 181, 229, 0.1);
 }
 
+.status.warning {
+    border-left: 2px solid #FFBB33;
+    background: rgba(255, 187, 51, 0.1);
+}
+
 .subtle-table th {
     font-size: 1.2em;
     font-weight: normal;
