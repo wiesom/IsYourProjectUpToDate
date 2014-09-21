@@ -123,7 +123,7 @@ function setupStep1() {
             /* Search for invalid characters*/
             var found_invalid_letters = github_info_value.match(INVALID_LETTERS_REGEX);
             if (found_invalid_letters != null && found_invalid_letters.length > 0) {
-                showError(status_box, 'Invalid characters: '+ found_invalid_letters.join(" ") + ' <br>' +
+                showError(status_box, 'Invalid characters: '+ $.unique(found_invalid_letters).join(" ") + ' <br>' +
                                       'Valid username/repository characters are alphanumerics, dashes and punctuations.');
                 return;
             }
