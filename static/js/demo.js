@@ -2,7 +2,7 @@
 /*global $, jQuery, ZeroClipboard, alert*/
 
 var GITHUB_URL_REGEX = /^(?:(?:http(?:s)?:\/\/)?(?:www\.)?)github\.com\//i;
-var USER_REPO_REGEX = /^([a-z0-9\-]+)\/([a-z0-9_.\-]+)$/i;
+var USER_REPO_REGEX = /^([\w-]+)\/([\w.-]+)$/i;
 var INVALID_LETTERS_REGEX = /[^\w\/\.-]/g;
 
 function setupClipboard(element) {
@@ -68,11 +68,15 @@ function setupButtonsForExporting() {
 }
 
 function showError(element, text) {
-    element.html(text).addClass('error').removeClass('neutral').show();
+    element.html(text).removeClass('warning neutral').addClass('error').show();
+}
+
+function showWarning(element, text) {
+    element.html(text).removeClass('progress error').addClass('warning').show();
 }
 
 function showProgress(element, text) {
-    element.html(text).addClass('neutral').removeClass('error').show();
+    element.html(text).removeClass('error warning').addClass('neutral').show();
 }
 
 function setupStep1() {
@@ -101,15 +105,15 @@ function setupStep1() {
             var project_type = form.find("select[name='project-type']").val();
             var token = form.find('input[name="csrfmiddlewaretoken"]').val();
 
-            /*Check for impossible errors*/
+            /* Check for impossible errors */
             if (project_type === undefined){
-                showError(status_box, "An impossible error has just occurred, so something is seriously broken<br>");
+                showError(status_box, "An impossible error has just occurred, so something is seriously broken!<br>");
                 return;
             }
 
-            /* Check for emtpty search field */
+            /* Check for empty search field */
             if (github_info_value.length === 0){
-                showProgress(status_box, 'Dude, you have to put something in the search field!<br>');
+                showWarning(status_box, 'You forgot to fill in the field below!<br>');
                 return;
             }
 
@@ -118,7 +122,7 @@ function setupStep1() {
 
             /* Search for invalid characters*/
             var found_invalid_letters = github_info_value.match(INVALID_LETTERS_REGEX);
-            if ( found_invalid_letters != null && found_invalid_letters.length > 0 ){
+            if (found_invalid_letters != null && found_invalid_letters.length > 0) {
                 showError(status_box, 'Invalid characters: '+ found_invalid_letters.join(" ") + ' <br>' +
                                       'Valid username/repository characters are alphanumerics, dashes and punctuations.');
                 return;
@@ -126,7 +130,7 @@ function setupStep1() {
 
             /* Check that we have a username and a repo name separated by a "/" */
             var user_repo_match = USER_REPO_REGEX.exec(github_info_value);
-            if ( user_repo_match === null ){
+            if (user_repo_match === null) {
                 showError(status_box, 'Invalid format, expected one of the following:<br><br>' +
                                       '- &lt;username&gt;/&lt;repository&gt;<br>' +
                                       '- [[http[s]://]www.github.com/]&lt;username&gt;/&lt;repository&gt;<br><br>' +
@@ -137,8 +141,8 @@ function setupStep1() {
             var github_username = user_repo_match[1];
             var github_repository = user_repo_match[2];
 
-            form.attr("running", true);
             //TODO: Use GitHub api to verify the username and repository name
+            form.attr("running", true);
             showProgress(status_box, 'Searching for ' + github_username + '/' + github_repository + ' on Github...');
 
             var postData = {
