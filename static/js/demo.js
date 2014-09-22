@@ -15,7 +15,7 @@ function setupClipboard(element) {
 }
 
 function setupButtonsForExporting() {
-    var github_project = GITHUB_URL_REGEX.exec($('input[name="github-info"]').val())[1];
+    var github_project = $('input[name="github-info"]').val().replace(GITHUB_URL_REGEX, "");
 
     $('#github-export').click(function(event) {
         event.preventDefault();
