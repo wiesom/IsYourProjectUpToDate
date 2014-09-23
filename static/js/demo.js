@@ -1,7 +1,9 @@
 /*jslint browser: true*/
 /*global $, jQuery, ZeroClipboard, alert*/
 
-var GITHUB_URL_REGEX = /(?:(?:http(?:s)?:\/\/(?:www\.)?)?github\.com\/)?([a-z0-9\-]+\/[a-z0-9_.\-]+)$/i;
+var GITHUB_URL_REGEX = /^(?:(?:http(?:s)?:\/\/)?(?:www\.)?)github\.com\//i;
+var USER_REPO_REGEX = /^([\w-]+)\/([\w.-]+)$/i;
+var INVALID_LETTERS_REGEX = /[^\w\/\.-]/g;
 
 function setupClipboard(element) {
     var client = new ZeroClipboard(element, { moviePath: "ZeroClipboard.swf", debug: false });
@@ -13,7 +15,7 @@ function setupClipboard(element) {
 }
 
 function setupButtonsForExporting() {
-    var github_project = GITHUB_URL_REGEX.exec($('input[name="github-info"]').val())[1];
+    var github_project = $('input[name="github-info"]').val().replace(GITHUB_URL_REGEX, "");
 
     $('#github-export').click(function(event) {
         event.preventDefault();
@@ -66,11 +68,15 @@ function setupButtonsForExporting() {
 }
 
 function showError(element, text) {
-    element.html(text).addClass('error').removeClass('neutral').show();
+    element.html(text).removeClass('warning neutral').addClass('error').show();
+}
+
+function showWarning(element, text) {
+    element.html(text).removeClass('progress error').addClass('warning').show();
 }
 
 function showProgress(element, text) {
-    element.html(text).addClass('neutral').removeClass('error').show();
+    element.html(text).removeClass('error warning').addClass('neutral').show();
 }
 
 function setupStep1() {
@@ -95,23 +101,52 @@ function setupStep1() {
 
             var status_box = form.find('.status');
             var github_info = form.find("input[name='github-info']");
+            var github_info_value = github_info.val();
             var project_type = form.find("select[name='project-type']").val();
             var token = form.find('input[name="csrfmiddlewaretoken"]').val();
 
-            var regex_matches = GITHUB_URL_REGEX.exec(github_info.val());
-            if (github_info.length === 0 || regex_matches === null || project_type === undefined) {
-                showError(status_box, 'Invalid format, expected one of the following:<br><br>' +
-                                      'Username/Repository<br>' +
-                                      'https://www.github.com/Username/Repository<br><br>' +
+            /* Check for impossible errors */
+            if (project_type === undefined){
+                showError(status_box, "An impossible error has just occurred, so something is seriously broken!<br>");
+                return;
+            }
+
+            /* Check for empty search field */
+            if (github_info_value.length === 0){
+                showWarning(status_box, 'You forgot to fill in the field below!<br>');
+                return;
+            }
+
+            /* Strip away the github url from the search string*/
+            github_info_value = github_info_value.replace(GITHUB_URL_REGEX, "");
+
+            /* Search for invalid characters*/
+            var found_invalid_letters = github_info_value.match(INVALID_LETTERS_REGEX);
+            if (found_invalid_letters != null && found_invalid_letters.length > 0) {
+                showError(status_box, 'Invalid characters: '+ $.unique(found_invalid_letters).join(" ") + ' <br>' +
                                       'Valid username/repository characters are alphanumerics, dashes and punctuations.');
                 return;
             }
 
+            /* Check that we have a username and a repo name separated by a "/" */
+            var user_repo_match = USER_REPO_REGEX.exec(github_info_value);
+            if (user_repo_match === null) {
+                showError(status_box, 'Invalid format, expected one of the following:<br><br>' +
+                                      '- &lt;username&gt;/&lt;repository&gt;<br>' +
+                                      '- [[http[s]://]www.github.com/]&lt;username&gt;/&lt;repository&gt;<br><br>' +
+                                      'Valid username/repository characters are alphanumerics, dashes and punctuations.');
+                return;
+            }
+
+            var github_username = user_repo_match[1];
+            var github_repository = user_repo_match[2];
+
+            //TODO: Use GitHub api to verify the username and repository name
             form.attr("running", true);
-            showProgress(status_box, 'Searching for ' + regex_matches[1] + ' on Github...');
+            showProgress(status_box, 'Searching for ' + github_username + '/' + github_repository + ' on Github...');
 
             var postData = {
-                "github-info": regex_matches[1],
+                "github-info": github_username + '/' + github_repository,
                 "project-type": project_type,
                 "csrfmiddlewaretoken": token
             };
