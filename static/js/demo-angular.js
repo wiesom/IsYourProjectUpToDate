@@ -7,6 +7,13 @@ jQuery(document).ready(function() {
     var GITHUB_URL_REGEX = /^(?:(?:http(?:s)?:\/\/(?:www\.)?)?github\.com\/)?(([\w-]+)\/([\w\.-]+))$/i;
     var app = angular.module('demo', []);
 
+    // Only way to I could get the HTML rendered correctly
+    app.filter('unsafe', function($sce) {
+        return function(val) {
+            return $sce.trustAsHtml(val);
+        };
+    });
+
     app.controller('MainController', function($scope, $rootScope){
         $rootScope.project_type = 'gradle';
         $rootScope.csrf_token = jQuery('input[name=csrfmiddlewaretoken]').val();
@@ -36,6 +43,8 @@ jQuery(document).ready(function() {
                 return;
             }
             $scope.running = true;
+            $scope.error = ""
+            $scope.progress = ""
 
             var status_box = jQuery('#step-1-status');
             var github_info = $scope.github_info;
@@ -45,16 +54,14 @@ jQuery(document).ready(function() {
             var regex_matches = GITHUB_URL_REGEX.exec(github_info);
             if (!github_info || !regex_matches) {
                 $scope.running = false;
-                $scope.showError(status_box,
-                                 'Invalid format, expected one of the following:<br><br>' +
-                                 'Username/Repository<br>' +
-                                 'https://www.github.com/Username/Repository<br><br>' +
-                                 'Valid username/repository characters are alphanumerics, dashes and punctuations.');
+                $scope.error = 'Invalid format, expected one of the following:<br/><br/>'+
+                    'Username/Repository<br/>' +
+                    'https://www.github.com/Username/Repository<br/><br/>' +
+                    'Valid username/repository characters are alphanumerics, dashes and punctuations.';
                 return;
             }
-
-
-            $scope.showProgress(status_box, "Searching for " + regex_matches[1] + " on Github...");
+            $scope.error = ""
+            $scope.progress = "Searching for " + regex_matches[1] + " on Github...";
 
             var postData = {
                 "github-info": regex_matches[1],
@@ -75,11 +82,11 @@ jQuery(document).ready(function() {
                         jQuery("#step-2").fadeIn(400);
                     });
                 } else {
-                    $scope.showError(status_box, data.message);
+                    $scope.error = data.message;
                     $scope.running = false;
                 }
             }).error(function(data) {
-                $scope.showError(status_box, data);
+                $scope.error = data;
                 $scope.running = false;
             });
         }
