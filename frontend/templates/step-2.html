@@ -2,6 +2,7 @@
     <h1>Project found!</h1>
     <p>Not only did we find your project, but we've also managed to find the following files in it. You may select/deselect any files below.</p>
     <form method="post" id="project-files-box">
+        {% include "status.html" %}
         <table id="project-files-table" class="subtle-table">
             <thead>
                 <tr>
@@ -33,7 +34,6 @@
                 </tr>
             </tbody>
         </table>
-        <div id="step-2-status" class="status" style="margin-top: 16px"></div>
         <input class="red-button" type="submit" value="Next" style="margin-top: 16px" ng-click="fetchDependencies($event)" ng-keypress="fetchDependencies($event)">
     </form>
 </section>
